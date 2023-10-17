@@ -49,3 +49,20 @@ Start the container defined in docker compose using
 ```bash
 docker-compose up -d
 ```
+
+# Steps to run
+
+## Build venv and install necessary libraries/frameworks
+
+Build the virtual environment:
+
+```bash
+python -m venv .venv
+.\.venv\Scripts\activate
+```
+
+Install necessary libraries and frameworks
+
+```bash
+pip install "fastapi[all]" sqlalchemy
+```
