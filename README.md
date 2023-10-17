@@ -31,3 +31,21 @@
 * Username - **Primary Key**
 * Password 
 * Type (customer, developer, admin)
+
+## Docker
+
+### Create network
+
+Create a user-defined bridge network using for the ticket system using:
+
+```bash
+docker network create ticket_system_network
+```
+
+### Start docker compose
+
+Start the container defined in docker compose using
+
+```bash
+docker-compose up -d
+```
