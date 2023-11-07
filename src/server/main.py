@@ -48,6 +48,6 @@ def create_user(user: schemas.User, db: Session = Depends(get_db)):
     new_user = crud.get_user(db, user)
 
     if user is None:
-        return HTTPException(status_code=404, detail="Something went wrong when creating the user")
+        return HTTPException(status_code=400, detail="Something went wrong when creating the user")
     else:
         return user
