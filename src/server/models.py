@@ -17,7 +17,7 @@ class Ticket(Base):
 
     id=Column(Integer, primary_key=True, index=True)
     description=Column(Text)
-    date_create=Column(Date)
+    date_created=Column(Date)
 
     # Create a foreign key relationship with the User model
     user_id=Column(Integer, ForeignKey("users.id"))
