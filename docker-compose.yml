@@ -1,21 +1,32 @@
-version: '3.8'
+version: '3.9'
 services:
-  db:
-    image: postgres:14.1-alpine
+  database_service:
+    container_name: pg_container
+    image: postgres
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=ticket_system
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: ticket_system_DB
     ports:
-      - '5432:5432'
-    volumes: 
-      - db:/var/lib/postgresql/data
+      - "5432:5432"
     networks:
       - ticket_system_network
-volumes:
-  db:
-    driver: local
+  pgadmin_service:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    networks:
+      - ticket_system_network
+    ports:
+      - "5050:80"
+
 networks:
   ticket_system_network:
-    external: true
+    driver: bridge
+
+volumes:
+  postgres_data:

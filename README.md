@@ -64,5 +64,26 @@ python -m venv .venv
 Install necessary libraries and frameworks
 
 ```bash
-pip install "fastapi[all]" sqlalchemy
+pip install "fastapi[all]" sqlalchemy tzdata
 ```
+
+## Start containers
+
+```docker-compose up -d```
+
+# Database Structure
+
+## Table User
+
+* ID: Auto-Increment Integer PK
+* Username: str
+* Password: str
+
+## Table Ticket
+
+* ID: Auto-Increment Integer PK
+* Description: str
+* Date-Created: Date
+* User Id: Integer
+
+There's a 1-n Relationship between user and ticket tables.
