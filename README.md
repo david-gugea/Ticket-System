@@ -57,6 +57,7 @@ docker-compose up -d
 Build the virtual environment:
 
 ```bash
+cd src/server
 python -m venv .venv
 .\.venv\Scripts\activate
 ```
@@ -64,13 +65,12 @@ python -m venv .venv
 Install necessary libraries and frameworks
 
 ```bash
-pip install "fastapi[all]" sqlalchemy tzdata
+pip install "fastapi[all]" sqlalchemy tzdata psycopg2
 ```
 
 ## Start Server
 
 ```bash
-cd src/server
 uvicorn main:app --host 0.0.0.0 --port 8003
 ```
 
