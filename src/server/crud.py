@@ -49,10 +49,11 @@ def create_ticket(db: Session, ticket: schemas.TicketCreate):
     db.refresh(new_ticket)
     return new_ticket
 
-def update_ticket(db: Session, ticket_update: schemas.TicketUpdateDescription):
-    """Update the description of the ticket"""
+def update_ticket(db: Session, ticket_update: schemas.TicketUpdate):
+    """Update the description/done status of the ticket"""
     ticket = db.query(models.Ticket).filter(models.Ticket.id==ticket_update.id).first()
     ticket.description = ticket_update.description
+    ticket.done = ticket_update.done
     db.commit()
 
 def delete_ticket(db: Session, ticket_delete: schemas.TicketId):
