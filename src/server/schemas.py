@@ -39,9 +39,10 @@ class TicketCreate(BaseModel):
     class Config:
         from_attributes=True
 
-class TicketUpdateDescription(BaseModel):
+class TicketUpdate(BaseModel):
     id: int
     description: str
+    done: bool
 
     class Config:
         from_attributes=True
@@ -50,6 +51,7 @@ class TicketFull(TicketId):
     description: str
     date_created: datetime.date
     user_id: int
+    done: bool
 
     class Config:
         from_attributes=True

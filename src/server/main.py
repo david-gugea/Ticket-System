@@ -63,7 +63,7 @@ def create_user(user: schemas.UserUsernamePassword, db: Session = Depends(get_db
         return schemas.UserUsernameId(id=new_user.id, username=new_user.username)
 
 @app.get("/tickets/get")
-def get_ticket(ticket: schemas.TicketId, db: Session = Depends(get_db)):
+def get_ticket_by_id(ticket: schemas.TicketId, db: Session = Depends(get_db)):
     """Get ticket from the database based on the provided ticket id. If the ticket couldn't be found, return a 404 error"""
     ticket = crud.get_ticket(db, ticket)
 
@@ -74,11 +74,12 @@ def get_ticket(ticket: schemas.TicketId, db: Session = Depends(get_db)):
             id=ticket.id,
             description=ticket.description,
             date_created=ticket.date_created,
-            user_id=ticket.user_id
+            user_id=ticket.user_id,
+            done=ticket.done
         )
 
 @app.get("/tickets/get_all")
-def get_ticket(db: Session = Depends(get_db)) -> list[schemas.TicketFull]:
+def get_all_tickets(db: Session = Depends(get_db)) -> list[schemas.TicketFull]:
     """Get all tickets from the database"""
     return crud.get_all_tickets(db)
 
@@ -90,12 +91,13 @@ def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
         id=ticket.id,
         description=ticket.description,
         date_created=ticket.date_created,
-        user_id=ticket.user_id
+        user_id=ticket.user_id,
+        done=ticket.done
     )
 
 @app.put("/tickets/update")
-def update_ticket(ticket: schemas.TicketUpdateDescription, db: Session = Depends(get_db)):
-    """Update the description of a ticket with a certain id"""
+def update_ticket(ticket: schemas.TicketUpdate, db: Session = Depends(get_db)):
+    """Update the description/done status of a ticket with a certain id"""
     try:
         crud.update_ticket(db, ticket)
     except Exception as ex:

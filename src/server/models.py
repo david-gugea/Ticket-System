@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, Sequence, Text, ForeignKey, Date
+from sqlalchemy import Column, Integer, Float, Sequence, Text, ForeignKey, Date, Boolean
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -18,6 +18,7 @@ class Ticket(Base):
     id=Column(Integer, primary_key=True, index=True)
     description=Column(Text)
     date_created=Column(Date)
+    done=Column(Boolean, default=False)
 
     # Create a foreign key relationship with the User model
     user_id=Column(Integer, ForeignKey("users.id"))
