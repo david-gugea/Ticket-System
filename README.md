@@ -67,6 +67,13 @@ Install necessary libraries and frameworks
 pip install "fastapi[all]" sqlalchemy tzdata
 ```
 
+## Start Server
+
+```bash
+cd src/server
+uvicorn main:app --host 0.0.0.0 --port 8003
+```
+
 ## Start containers
 
 ```docker-compose up -d```
@@ -87,3 +94,15 @@ pip install "fastapi[all]" sqlalchemy tzdata
 * User Id: Integer
 
 There's a 1-n Relationship between user and ticket tables.
+
+## Credentials
+
+### pgadmin
+
+* email: admin@admin.com
+* password: root
+
+### pgcontainer
+
+* username: root
+* password: root
