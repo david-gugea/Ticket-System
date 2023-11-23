@@ -97,11 +97,19 @@ def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
 
 @app.put("/tickets/update")
 def update_ticket(ticket: schemas.TicketUpdate, db: Session = Depends(get_db)):
-    """Update the description/done status of a ticket with a certain id"""
+    """Update the description of a ticket with a certain id"""
     try:
         crud.update_ticket(db, ticket)
     except Exception as ex:
         return HTTPException(status_code=404, detail="Something went wrong when trying to update the ticket. The ID might not have been found")
+
+@app.put("/tickets/close")
+def close_ticket(ticket: schemas.TicketClose, db: Session=Depends(get_db)):
+    """Set a ticket's done status to true and save the id of the user who closed the ticket and the data when this happened"""
+    try:
+        crud.close_ticket(db, ticket)
+    except Exception as ex:
+        return HTTPException(status_code=404, detail="Something went wrong when trying to close the ticket. The ID of the ticket or the ID of the user that closed the ticket might not have been found")
 
 @app.delete("/tickets/delete")
 def delete_ticket(ticket: schemas.TicketId, db: Session = Depends(get_db)):

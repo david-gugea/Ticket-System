@@ -49,11 +49,18 @@ def create_ticket(db: Session, ticket: schemas.TicketCreate):
     db.refresh(new_ticket)
     return new_ticket
 
+def close_ticket(db: Session, ticket_close: schemas.TicketClose):
+    """Close a ticket"""
+    ticket = db.query(models.Ticket).filter(models.Ticket.id==ticket_update.id).first()
+    ticket.done = True
+    ticket.closed_by = ticket_close.closed_by
+    ticket.date_closed = datetime.date.today()
+    db.commit()
+
 def update_ticket(db: Session, ticket_update: schemas.TicketUpdate):
     """Update the description/done status of the ticket"""
     ticket = db.query(models.Ticket).filter(models.Ticket.id==ticket_update.id).first()
     ticket.description = ticket_update.description
-    ticket.done = ticket_update.done
     db.commit()
 
 def delete_ticket(db: Session, ticket_delete: schemas.TicketId):

@@ -42,7 +42,13 @@ class TicketCreate(BaseModel):
 class TicketUpdate(BaseModel):
     id: int
     description: str
-    done: bool
+
+    class Config:
+        from_attributes=True
+
+class TicketClose(BaseModel):
+    id: int
+    closed_by: int
 
     class Config:
         from_attributes=True

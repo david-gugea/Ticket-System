@@ -18,10 +18,15 @@ class Ticket(Base):
     id=Column(Integer, primary_key=True, index=True)
     description=Column(Text)
     date_created=Column(Date)
+    date_closed=Column(Date)
     done=Column(Boolean, default=False)
 
+    # This id represents the user who closed the ticket
+    closed_by=Column(Integer, ForeignKey("users.id"))
+
     # Create a foreign key relationship with the User model
-    user_id=Column(Integer, ForeignKey("users.id"))
+    # This id represents who created the ticket
+    owner_id=Column(Integer, ForeignKey("users.id"))
 
     # Define the back reference to the User model
     user = relationship("User", back_populates="tickets")
