@@ -1,12 +1,16 @@
 <template>
-    <div class="login-container">
+    <div class="register-container">
       <div class="background"></div>
-      <div class="login-form" @mouseover="hover = true" @mouseleave="hover = false">
+      <div class="register-form" @mouseover="hover = true" @mouseleave="hover = false">
         <form>
-          <h2 class="form-title">Sign In</h2>
+          <h2 class="form-title">Register</h2>
           <div class="form-group">
-            <label for="username" class="form-label">Username or Email:</label>
+            <label for="username" class="form-label">Username</label>
             <input type="text" id="username" v-model="username" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input type="text" id="email" v-model="email" class="form-input" />
           </div>
           <div class="form-group">
             <label for="password" class="form-label">Password:</label>
@@ -14,7 +18,7 @@
           </div>
           <button @click.prevent="login" :class="{ 'hover-effect': hover }" class="form-button">Login</button>
           <span>
-            <router-link to="/register"  style="margin-top: 20px;">Don't have an account? Register</router-link>
+            <router-link to="/login"  style="margin-top: 20px;">Already have an account? Login</router-link>
           </span>
           <p></p>
         </form>
@@ -27,21 +31,21 @@
     data() {
       return {
         username: '',
+        email:'',
         password: '',
         hover: false,
       };
     },
     methods: {
-      login() {
-        // Your login logic here
-        console.log('Login clicked!');
+      register() {
+        console.log('Register clicked!');
       },
     },
   };
   </script>
   
   <style scoped>
-  .login-container {
+  .register-container {
     position: relative;
     display: flex;
     justify-content: center;
@@ -60,7 +64,7 @@
     z-index: -1;
   }
   
-  .login-form {
+  .register-form {
     background-color: #292b2c;
     padding: 40px;
     border-radius: 10px;

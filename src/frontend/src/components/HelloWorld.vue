@@ -8,7 +8,7 @@
 import axios from 'axios';
 
 export default {
-  name: 'PingComponent',
+  name: 'PingMessage',
   data() {
     return {
       msg: '',
