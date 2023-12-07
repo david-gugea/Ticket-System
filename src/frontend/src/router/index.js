@@ -21,8 +21,8 @@ const routes = [
     component: RegisterView
   },
   {
-    path: '/ticketDashboard',
-    name: 'ticketDashboard',
+    path: '/ticketsDashboard',
+    name: 'ticketsDashboard',
     component: TicketDashboardView
   }
 ]
