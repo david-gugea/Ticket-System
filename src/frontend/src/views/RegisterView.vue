@@ -1,48 +1,77 @@
 <template>
-    <div class="register-container">
-      <div class="background"></div>
-      <div class="register-form" @mouseover="hover = true" @mouseleave="hover = false">
-        <form>
-          <h2 class="form-title">Register</h2>
-          <div class="form-group">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" id="username" v-model="username" class="form-input" />
-          </div>
-          <div class="form-group">
-            <label for="email" class="form-label">Email</label>
-            <input type="text" id="email" v-model="email" class="form-input" />
-          </div>
-          <div class="form-group">
-            <label for="password" class="form-label">Password:</label>
-            <input type="password" id="password" v-model="password" class="form-input" />
-          </div>
-          <button @click.prevent="login" :class="{ 'hover-effect': hover }" class="form-button">Login</button>
-          <span>
-            <router-link to="/login"  style="margin-top: 20px;">Already have an account? Login</router-link>
-          </span>
-          <p></p>
-        </form>
-      </div>
+  <div class="register-container">
+    <div class="background"></div>
+    <div class="register-form" @mouseover="hover = true" @mouseleave="hover = false">
+      <form>
+        <h2 class="form-title">Register</h2>
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" v-model="username" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label for="password" class="form-label">Password:</label>
+          <input type="password" id="password" v-model="password" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label for="passwordConfirm" class="form-label">Password Confirmation</label>
+          <input type="password" id="passwordConfirm" v-model="passwordConfirm" class="form-input" />
+        </div>
+        <button @click.prevent="register" :class="{ 'hover-effect': hover }" class="form-button">Register</button>
+        <span>
+          <router-link to="/login" style="margin-top: 20px;">Already have an account? Login</router-link>
+        </span>
+        <p></p>
+      </form>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        username: '',
-        email:'',
-        password: '',
-        hover: false,
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      username: '',
+      password: '',
+      passwordConfirm: '', // Added password confirmation field
+      hover: false,
+    };
+  },
+  methods: {
+    register() {
+      // Password validation
+      if (this.password !== this.passwordConfirm) {
+        console.error('Password and password confirmation do not match');
+        // You can handle the error, e.g., show an error message to the user
+        return;
+      }
+
+      // Replace the URL with your actual API endpoint
+      const apiUrl = 'http://localhost:8003/users/create';
+
+      // Prepare the data to send to the server
+      const requestData = {
+        username: this.username,
+        password: this.password,
       };
+
+      // Make a POST request using Axios
+      axios.post(apiUrl, requestData)
+        .then(response => {
+          console.log('Registration successful!', response.data);
+          
+          // Navigate to the login page upon successful registration
+          this.$router.push({ name: 'login' });
+        })
+        .catch(error => {
+          console.error('Registration failed!', error);
+          // Handle the error, e.g., show an error message to the user
+        });
     },
-    methods: {
-      register() {
-        console.log('Register clicked!');
-      },
-    },
-  };
-  </script>
+  },
+};
+</script>
   
   <style scoped>
   .register-container {

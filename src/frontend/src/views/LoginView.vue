@@ -5,7 +5,7 @@
         <form>
           <h2 class="form-title">Sign In</h2>
           <div class="form-group">
-            <label for="username" class="form-label">Username or Email:</label>
+            <label for="username" class="form-label">Username:</label>
             <input type="text" id="username" v-model="username" class="form-input" />
           </div>
           <div class="form-group">
@@ -23,6 +23,8 @@
   </template>
   
   <script>
+  import axios from 'axios';
+  
   export default {
     data() {
       return {
@@ -33,12 +35,40 @@
     },
     methods: {
       login() {
-        // Your login logic here
-        console.log('Login clicked!');
+        const apiUrl = 'http://localhost:8003/users/get_by/userpass';
+        let requestBody = {
+          username: this.username,
+          password: this.password
+        };
+  
+        // Make a GET request using Axios with query parameters
+        axios.get(apiUrl, {
+          params: requestBody
+        })
+          .then(response => {
+            // Assuming the API returns user data upon successful login
+            const userData = response.data;
+            
+            console.log(userData);
+            // Check if the user input matches the returned data
+            if (userData) {
+              // Redirect to the ticket dashboard upon successful login
+              this.$router.push({ name: 'ticketDashboard' });
+            } else {
+              console.error('Invalid username or password');
+              // Handle the case where the username or password is incorrect
+            }
+          })
+          .catch(error => {
+            console.error('Login failed!', error);
+            // Handle the error, e.g., show an error message to the user
+          });
       },
     },
   };
   </script>
+  
+
   
   <style scoped>
   .login-container {
