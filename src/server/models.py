@@ -7,10 +7,12 @@ class User(Base):
     __tablename__ = "users"
 
     id=Column(Integer, primary_key=True, index=True)
-    username=Column(Text)
+    username=Column(Text, unique=True)
     password=Column(Text)
+    salt=Column(Text)
 
-    tickets=relationship("Ticket", back_populates="user")
+    created_tickets = relationship("Ticket", foreign_keys="[Ticket.user_id]", back_populates="user")
+    closed_tickets = relationship("Ticket", foreign_keys="[Ticket.closed_by]", back_populates="closed_by_user")
 
 class Ticket(Base):
     __tablename__ = "tickets"
@@ -26,7 +28,8 @@ class Ticket(Base):
 
     # Create a foreign key relationship with the User model
     # This id represents who created the ticket
-    owner_id=Column(Integer, ForeignKey("users.id"))
+    user_id=Column(Integer, ForeignKey("users.id"))
 
     # Define the back reference to the User model
-    user = relationship("User", back_populates="tickets")
+    user = relationship("User", foreign_keys="[Ticket.user_id]", back_populates="created_tickets")
+    closed_by_user = relationship("User", foreign_keys="[Ticket.closed_by]", back_populates="closed_tickets")

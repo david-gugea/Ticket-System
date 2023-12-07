@@ -75,7 +75,9 @@ def get_ticket_by_id(ticket: schemas.TicketId, db: Session = Depends(get_db)):
             description=ticket.description,
             date_created=ticket.date_created,
             user_id=ticket.user_id,
-            done=ticket.done
+            done=ticket.done,
+            date_closed = ticket.date_closed,
+            closed_by = ticket.closed_by,
         )
 
 @app.get("/tickets/get_all")
@@ -92,7 +94,9 @@ def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
         description=ticket.description,
         date_created=ticket.date_created,
         user_id=ticket.user_id,
-        done=ticket.done
+        done=ticket.done,
+        date_closed=None,
+        closed_by=None
     )
 
 @app.put("/tickets/update")
@@ -109,6 +113,7 @@ def close_ticket(ticket: schemas.TicketClose, db: Session=Depends(get_db)):
     try:
         crud.close_ticket(db, ticket)
     except Exception as ex:
+        print(ex)
         return HTTPException(status_code=404, detail="Something went wrong when trying to close the ticket. The ID of the ticket or the ID of the user that closed the ticket might not have been found")
 
 @app.delete("/tickets/delete")

@@ -56,6 +56,8 @@ class TicketClose(BaseModel):
 class TicketFull(TicketId):
     description: str
     date_created: datetime.date
+    date_closed: datetime.date | None
+    closed_by: int | None
     user_id: int
     done: bool
 
