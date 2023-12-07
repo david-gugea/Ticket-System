@@ -28,18 +28,16 @@ def create_user(db: Session, user: schemas.UserUsernamePassword):
     db.refresh(new_user)
     return new_user
 
-def get_user_by_username_password(db: Session, user: schemas.UserUsernamePassword):
+def get_user_by_username_password(db: Session, username: str, password: str):
     """Get the data of an existing user based on username and password"""
-    db_user = db.query(models.User).filter(models.User.username==user.username).first()
+    db_user = db.query(models.User).filter(models.User.username==username).first()
 
     if db_user is None:
         # wrong username
         return None
 
-    print(f"get_user_by_username_password user -> {user} || {type(user)}")
     salt_value = db_user.salt
-    hashed_password = hash_password(f"{user.password}:{salt_value}")
-    print(f"salt_value -> {db_user.salt} | hashed_password -> {hashed_password}")
+    hashed_password = hash_password(f"{password}:{salt_value}")
 
     if hashed_password != db_user.password:
         # wrong password
@@ -47,13 +45,13 @@ def get_user_by_username_password(db: Session, user: schemas.UserUsernamePasswor
     else:
         return db_user
 
-def get_user_by_id(db: Session, user: schemas.UserUserId):
+def get_user_by_id(db: Session, user_id: int):
     """Get the data of an existing user based on username and password"""
-    return db.query(models.User).filter(models.User.id == user.id).first()
+    return db.query(models.User).filter(models.User.id == user_id).first()
 
-def get_ticket(db: Session, ticket_id: schemas.TicketId):
+def get_ticket(db: Session, ticket_id: int):
     """Get the data of an existing user based on username and password"""
-    return db.query(models.Ticket).filter(models.Ticket.id==ticket_id.id).first()
+    return db.query(models.Ticket).filter(models.Ticket.id==ticket_id).first()
 
 def get_all_tickets(db: Session):
     """Get all tickets from the database"""

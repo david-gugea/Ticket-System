@@ -28,9 +28,9 @@ def get_db():
         db.close()
 
 @app.get("/users/get_by/userpass")
-def get_user_by_username_password(user: schemas.UserUsernamePassword, db: Session = Depends(get_db)):
+def get_user_by_username_password(username: str, password: str, db: Session = Depends(get_db)):
     """Get user data from the database using the provided username and password. If the user isn't found or if the credentials are wrong, return a 404 HTTP error"""
-    user = crud.get_user_by_username_password(db, user)
+    user = crud.get_user_by_username_password(db, username, password)
 
     if user is None:
         return HTTPException(status_code=404, detail="User not found or wrong credentials.")
@@ -38,9 +38,9 @@ def get_user_by_username_password(user: schemas.UserUsernamePassword, db: Sessio
         return schemas.UserUsernameId(username=user.username, id=user.id)
 
 @app.get("/users/get_by/id")
-def get_user_by_id(user: schemas.UserUserId, db: Session = Depends(get_db)):
+def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     """Get user data from the database using the provided username and password. If the user isn't found or if the credentials are wrong, return a 404 HTTP error"""
-    user = crud.get_user_by_id(db, user)
+    user = crud.get_user_by_id(db, user_id)
 
     if user is None:
         return HTTPException(status_code=404, detail="User not found or wrong credentials.")
@@ -63,9 +63,9 @@ def create_user(user: schemas.UserUsernamePassword, db: Session = Depends(get_db
         return schemas.UserUsernameId(id=new_user.id, username=new_user.username)
 
 @app.get("/tickets/get")
-def get_ticket_by_id(ticket: schemas.TicketId, db: Session = Depends(get_db)):
+def get_ticket_by_id(ticket_id: int, db: Session = Depends(get_db)):
     """Get ticket from the database based on the provided ticket id. If the ticket couldn't be found, return a 404 error"""
-    ticket = crud.get_ticket(db, ticket)
+    ticket = crud.get_ticket(db, ticket_id)
 
     if ticket is None:
         return HTTPException(status_code=404, detail="Ticket couldn't be found")
