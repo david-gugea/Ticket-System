@@ -1,48 +1,30 @@
 <template>
-   <div>
-     <h1>Ticket Dashboard</h1>
- 
-     <!-- Display a form for creating tickets -->
+   <div class="ticket-dashboard">
+     <!-- Create ticket form -->
      <form @submit.prevent="createTicket">
-       <div class="mb-3">
-         <label for="subject">Subject</label>
-         <input type="text" class="form-control" id="subject" v-model="newTicket.subject" required />
-       </div>
-       <div class="mb-3">
-         <label for="category">Category</label>
-         <select class="form-select" id="category" v-model="newTicket.category" required>
-           <option value="1">Support</option>
-           <option value="2">Invoice</option>
-           <option value="3">Cancellation</option>
-         </select>
-       </div>
-       <div class="mb-3">
+       <div class="form-group">
          <label for="description">Description</label>
-         <textarea class="form-control" id="description" rows="3" v-model="newTicket.description" required></textarea>
+         <textarea class="form-control" id="description" v-model="newTicket.description" required></textarea>
        </div>
-       <div class="mb-3">
-         <label for="priority">Priority</label>
-         <select class="form-select" id="priority" v-model="newTicket.priority" required>
-           <option value="1">High</option>
-           <option value="2">Medium</option>
-           <option value="3">Low</option>
-         </select>
+       <div class="form-group">
+         <label for="date_created">Date Created</label>
+         <input type="date" class="form-control" id="date_created" v-model="newTicket.date_created" required>
        </div>
-       <div class="mb-3">
-         <label for="kind">Kind</label>
-         <select class="form-select" id="kind" v-model="newTicket.kind" required>
-           <option value="1">Bug</option>
-           <option value="2">Task</option>
-           <option value="3">Enhancement</option>
-         </select>
+       <div class="form-group">
+         <label for="date_closed">Date Closed</label>
+         <input type="date" class="form-control" id="date_closed" v-model="newTicket.date_closed">
        </div>
-       <div class="mb-3">
-         <label for="assignedTo">Assigned To</label>
-         <select class="form-select" id="assignedTo" v-model="newTicket.assignedTo" required>
-           <option value="1">John Doe</option>
-           <option value="2">Jane Smith</option>
-           <option value="3">Mary Johnson</option>
-         </select>
+       <div class="form-group">
+         <label for="done">Done</label>
+         <input type="checkbox" id="done" v-model="newTicket.done">
+       </div>
+       <div class="form-group">
+         <label for="closed_by">Closed By</label>
+         <input type="text" class="form-control" id="closed_by" v-model="newTicket.closed_by">
+       </div>
+       <div class="form-group">
+         <label for="user_id">User ID</label>
+         <input type="number" class="form-control" id="user_id" v-model="newTicket.user_id" required>
        </div>
        <button type="submit" class="btn btn-primary">Create Ticket</button>
      </form>
@@ -53,12 +35,12 @@
        <thead>
          <tr>
            <th>ID</th>
-           <th>Subject</th>
-           <th>Category</th>
            <th>Description</th>
-           <th>Priority</th>
-           <th>Kind</th>
-           <th>Assigned To</th>
+           <th>Date Created</th>
+           <th>Date Closed</th>
+           <th>Done</th>
+           <th>Closed By</th>
+           <th>User ID</th>
          </tr>
        </thead>
        <!-- Table body with tickets -->
@@ -66,14 +48,20 @@
          <tr v-for="ticket in tickets" :key="ticket.id">
            <td>{{ ticket.id }}</td>
            <td>{{ ticket.subject }}</td>
-           <td>{{ getCategoryLabel(ticket.category) }}</td>
            <td>{{ ticket.description }}</td>
-           <td>{{ getPriorityLabel(ticket.priority) }}</td>
-           <td>{{ getKindLabel(ticket.kind) }}</td>
-           <td>{{ getAssignedToLabel(ticket.assignedTo) }}</td>
+           <td>{{ ticket.date_created }}</td>
+           <td>{{ ticket.date_closed }}</td>
+           <td>{{ ticket.done }}</td>
+           <td>{{ ticket.closed_by }}</td>
+           <td>{{ ticket.user_id }}</td>
          </tr>
        </tbody>
      </table>
+ 
+     <!-- Loading spinner -->
+     <div v-if="loading" class="spinner-border text-primary" role="status">
+       <span class="sr-only">Loading...</span>
+     </div>
    </div>
  </template>
  
@@ -85,82 +73,91 @@
    data() {
      return {
        newTicket: {
-         subject: '',
-         category: '',
          description: '',
-         priority: '',
-         kind: '',
-         assignedTo: ''
+         date_created: '',
+         date_closed: '',
+         done: false,
+         closed_by: '',
+         user_id: ''
        },
-       tickets: []
+       tickets: [],
+       loading: false
      };
    },
    methods: {
      createTicket() {
-       // Assuming an API endpoint for creating tickets
-       const apiUrl = '/api/tickets';
- 
-       // Post the new ticket to the API
-       axios.post(apiUrl, this.newTicket)
+       this.loading = true;
+       axios.post('http://localhost:8003/tickets/create', this.newTicket)
          .then(response => {
-           console.log('Ticket created successfully', response.data);
-           // Add the created ticket to the list
            this.tickets.push(response.data);
-           // Reset the form
            this.newTicket = {
-             subject: '',
-             category: '',
              description: '',
-             priority: '',
-             kind: '',
-             assignedTo: ''
+             date_created: '',
+             date_closed: '',
+             done: false,
+             closed_by: '',
+             user_id: ''
            };
          })
          .catch(error => {
-           console.error('Error creating ticket', error);
+           console.error('Failed to create ticket', error);
+         })
+         .finally(() => {
+           this.loading = false;
          });
-     },
-     getCategoryLabel(category) {
-       // Map category values to labels
-       const categoryMap = {
-         1: 'Support',
-         2: 'Invoice',
-         3: 'Cancellation'
-       };
-       return categoryMap[category] || '';
-     },
-     getPriorityLabel(priority) {
-       // Map priority values to labels
-       const priorityMap = {
-         1: 'High',
-         2: 'Medium',
-         3: 'Low'
-       };
-       return priorityMap[priority] || '';
-     },
-     getKindLabel(kind) {
-       // Map kind values to labels
-       const kindMap = {
-         1: 'Bug',
-         2: 'Task',
-         3: 'Enhancement'
-       };
-       return kindMap[kind] || '';
-     },
-     getAssignedToLabel(assignedTo) {
-       // Map assignedTo values to labels
-       const assignedToMap = {
-         1: 'John Doe',
-         2: 'Jane Smith',
-         3: 'Mary Johnson'
-       };
-       return assignedToMap[assignedTo] || '';
      }
+   },
+   mounted() {
+     this.loading = true;
+     axios.get('/api/tickets')
+       .then(response => {
+         this.tickets = response.data;
+       })
+       .catch(error => {
+         console.error('Failed to fetch tickets', error);
+       })
+       .finally(() => {
+         this.loading = false;
+       });
    }
  };
  </script>
  
  <style scoped>
- /* Your styling here */
+ .ticket-dashboard {
+   max-width: 1200px;
+   margin: 0 auto;
+   padding: 20px;
+   background-color: #f8f9fa;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+ }
+ 
+ .form-group {
+   margin-bottom: 20px;
+ }
+ 
+ .btn-primary {
+   background-color: #007bff;
+   color: #fff;
+ }
+ 
+ table {
+   width: 100%;
+   border-collapse: collapse;
+   margin-top: 20px;
+ }
+ 
+ th, td {
+   border: 1px solid #dee2e6;
+   padding: 8px;
+   text-align: left;
+ }
+ 
+ th {
+   background-color: #007bff;
+   color: #fff;
+ }
+ 
+ /* Add other styles as needed */
  </style>
  
