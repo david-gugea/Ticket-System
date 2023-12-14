@@ -65,7 +65,7 @@ python -m venv .venv
 Install necessary libraries and frameworks
 
 ```bash
-pip install "fastapi[all]" sqlalchemy tzdata psycopg2
+pip install -r requirements.txt
 ```
 
 ## Start Server
