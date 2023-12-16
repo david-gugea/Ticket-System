@@ -27,9 +27,9 @@
 }
 
 .logo-container {
-  margin-bottom: 50px; /* Adjust as needed */
+  margin-bottom: 50px; 
   cursor: pointer;
-  transition: none; /* Disable the toggle animation */
+  transition: none; 
 }
 
 .ticketSystemLogo {

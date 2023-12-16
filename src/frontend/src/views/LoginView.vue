@@ -35,29 +35,23 @@ export default {
   },
   methods: {
     login() {
-      const apiUrl = `http://localhost:8003/users/get_by/userpass?username=${this.username}&password=${this.password}`;
-
-      // Make a GET request using Axios with query parameters
-      axios.get(apiUrl)
-        .then(response => {
-          // Assuming the API returns user data upon successful login
-          const userData = response.data;
-
-          console.log(userData);
-
-          // Check if the user input matches the returned data
-          if (userData) {
-            // Redirect to the ticket dashboard upon successful login
-            this.$router.push({ name: 'ticketsDashboard' });
-          } else {
-            console.error('Invalid username or password');
-            // Handle the case where the username or password is incorrect
-          }
-        })
-        .catch(error => {
-          console.error('Login failed!', error);
-          // Handle the error, e.g., show an error message to the user
-        });
+      const username = this.username;
+      const password = this.password;
+      if(username.length === 0 && password.length === 0){
+        alert('Please enter your username and password!')
+      }else{
+        const apiUrl = `http://localhost:8003/users/get_by/userpass?username=${this.username}&password=${this.password}`;
+        axios.get(apiUrl)
+          .then(response => {
+            const userData = response.data;
+            if (userData) {
+              localStorage.setItem('loggedInUser', userData.username);
+              this.$router.push({ name: 'ticketsDashboard' });
+            } else {
+              alert('Invalid username or password');
+            }
+          })
+      }
     },
   },
 };
