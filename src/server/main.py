@@ -50,7 +50,7 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
 @app.post("/users/create")
 def create_user(user: schemas.UserUsernamePassword, db: Session = Depends(get_db)):
     """Create a new user in the database. If the user already exists, return 400 error"""
-    find_user = crud.get_user_by_username_password(db, user)
+    find_user = crud.get_user_by_username_password(db, user.username, user.password)
 
     if find_user is not None:
         return HTTPException(status_code=400, detail="Something went wrong when creating the user. The username might already exist in the database.")
