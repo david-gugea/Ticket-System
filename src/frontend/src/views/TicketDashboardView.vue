@@ -1,12 +1,18 @@
 <template>
-  <div class="logged-in-user">
-    <p>Logged in as: {{ loggedInUser }}</p>
-  </div>
-  <div>
-    <input type="text" v-model="searchQuery" placeholder="Search...">
-    <ul>
+  <!-- User Profile Section -->
+  <div class="user-profile" @mouseover="showProfileDropdown = true" @mouseleave="showProfileDropdown = false">
+    <img src="../assets/userAvatar.png" alt="User Profile Image" class="profile-image" />
+    <p class="logged-in-user">User: <span>{{ loggedInUser }}</span></p>
 
-    </ul>
+    <!-- User Profile Dropdown -->
+    <div v-if="showProfileDropdown" class="profile-dropdown">
+      <!-- Add more user-related options as needed -->
+      <button @click="logout" class="logout-btn">Logout</button>
+    </div>
+  </div>
+  <!-- Search Bar Section -->
+  <div class="search-bar">
+    <input type="text" v-model="searchQuery" placeholder="Search..." @input="filterTable">
   </div>
   <div class="ticketDasboard-container">
 
@@ -56,7 +62,7 @@
         </thead>
         <!-- Table body with tickets -->
         <tbody>
-          <tr v-for="ticket in tickets" :key="ticket.id">
+          <tr v-for="ticket in filteredTickets" :key="ticket.id">
             <td>{{ ticket.id }}</td>
             <td>{{ ticket.description }}</td>
             <td>{{ formatDate(ticket.date_created) }}</td>
@@ -98,8 +104,8 @@
 
 
       <!-- Loading spinner -->
-      <div v-if="loading" class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
+      <div v-if="loading" class="loading-spinner" role="status">
+        <div class="spinner"></div>
       </div>
     </div>
   </div>
@@ -126,12 +132,23 @@ export default {
       hover: false,
       selectedTicket: null,
       loggedInUser: '',
-      searchQuery: ''
+      searchQuery: '',
+      filteredTickets: [],
+      showProfileDropdown: false,
     };
   },
 
 
   methods: {
+    logout() {
+      // Implement your logout logic here, such as clearing user data and redirecting
+      // For example, clearing localStorage and redirecting to the login page
+      localStorage.removeItem('loggedInUser');
+      // Add more logic as needed
+
+      // For redirecting to the login page
+      this.$router.push('/'); // Update the route accordingly
+    },
     createTicket() {
       this.loading = true;
       axios.post('http://localhost:8003/tickets/create', this.newTicket)
@@ -157,9 +174,11 @@ export default {
         });
     },
 
-    filteredItems() {
-      return this.filteredItems.filter(item =>
-        item.name.toLowerCase().includes(this.searchQuery.toLowerCase))
+    filterTable() {
+      // Filter the table based on the searchQuery
+      this.filteredTickets = this.tickets.filter(ticket =>
+        ticket.description.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
     },
 
     closeTicket(ticket) {
@@ -275,6 +294,7 @@ export default {
     axios.get('http://localhost:8003/tickets/get_all')
       .then(response => {
         this.tickets = response.data;
+        this.filteredTickets = [...this.tickets];
         this.saveDataToLocalStorage();
       })
       .catch(error => {
@@ -286,20 +306,82 @@ export default {
   }
 };
 </script>
- 
 <style scoped>
-.logged-in-user {
-  font-size: 16px;
-  color: #555;
-  margin-bottom: 15px;
+.profile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-left: 10%;
+  background-color: #292b2c;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 1000;
+}
+
+.profile-dropdown button {
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.profile-dropdown button:hover {
+  background-color: #333;
+}
+
+.user-profile {
   position: absolute;
   top: 20px;
   right: 20px;
+  display: flex;
+  align-items: center;
+  background-color: #292b2c;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.logged-in-user {
+  font-size: 16px;
+  color: #555;
+  margin: 0;
 }
 
 .logged-in-user span {
   color: #68d2df;
   font-weight: bold;
+}
+
+.search-bar {
+  display: flex;
+  margin-top: 2%;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  padding: 10px;
+  font-size: 16px;
+  width: 300px;
+  /* Adjust width as needed */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
 }
 
 .popup {
@@ -309,15 +391,12 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   background: #292b2c;
-
   padding: 20px;
   border: 1px solid #333;
-
   z-index: 1000;
   max-width: 400px;
   width: 100%;
   border-radius: 10px;
-
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
@@ -335,6 +414,7 @@ export default {
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
 .btn-secondary {
   background-color: #7f8c8d;
   color: #ecf0f1;
@@ -348,7 +428,7 @@ export default {
 .table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 10%;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   font-size: 16px;
@@ -368,9 +448,31 @@ th {
   color: white;
 }
 
-.spinner-border {
-  display: block;
-  margin: 20px auto;
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.spinner {
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top: 6px solid #68d2df; /* Change the color as needed */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .ticketDasboard-container {
