@@ -57,6 +57,10 @@ def get_all_tickets(db: Session):
     """Get all tickets from the database"""
     return db.query(models.Ticket).all()
 
+def get_all_tickets_by_user_id(user_id: int, db: Session):
+    """Get a ticket with a certain user id"""
+    return db.query(models.Ticket).filter(models.Ticket.user_id==user_id).all()
+
 def create_ticket(db: Session, ticket: schemas.TicketCreate):
     """Add a new ticket to the database"""
     new_ticket = models.Ticket(**ticket.dict())

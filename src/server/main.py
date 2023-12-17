@@ -85,6 +85,11 @@ def get_all_tickets(db: Session = Depends(get_db)) -> list[schemas.TicketFull]:
     """Get all tickets from the database"""
     return crud.get_all_tickets(db)
 
+@app.get("/tickets/get_by_user_id")
+def get_tickets_with_user_id(user_id: int, db: Session = Depends(get_db)) -> list[schemas.TicketFull]:
+    """Get all tickets that have a certain user id"""
+    return crud.get_all_tickets_by_user_id(user_id, db)
+
 @app.post("/tickets/create")
 def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
     """Add a new ticket to the database"""
