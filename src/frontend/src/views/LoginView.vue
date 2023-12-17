@@ -1,4 +1,4 @@
-<template>
+<template> 
   <div class="login-container">
     <div class="background"></div>
     <div class="login-form" @mouseover="hover = true" @mouseleave="hover = false">
