@@ -166,9 +166,12 @@ export default {
       if (!ticket.done) {
         this.loading = true;
         ticket.done = true;
-        ticket.date_closed = new Date().toISOString().split('T')[0];
         ticket.closed_by = "System";
-        axios.put(`http://localhost:8003/tickets/close/${ticket.id}`, this.newTicket)
+        const requestBody = {
+          "id": ticket.id,
+          "closed_by": user.id,
+        }
+        axios.put(`http://localhost:8003/tickets/close`, requestBody)
           .then(() => {
             this.saveDataToLocalStorage();
           })
@@ -189,7 +192,7 @@ export default {
     updateTicket() {
       this.loading = true;
       const id = this.selectedTicket.id;
-      axios.put(`http://localhost:8003/tickets/update/${id}`, {
+      axios.put(`http://localhost:8003/tickets/update`, {
         "id": id,
         "description": "testPut"
       }, {
@@ -224,7 +227,10 @@ export default {
 
       const id = this.selectedTicket.id;
 
-      axios.delete(`http://localhost:8003/tickets/delete/${id}`)
+      const requestBody = {
+        ticketId: this.selectedTicket.id,
+      }
+      axios.delete(`http://localhost:8003/tickets/delete`, requestBody)
         .then(res => {
           console.log(res.data);
           alert(res.data.message);
