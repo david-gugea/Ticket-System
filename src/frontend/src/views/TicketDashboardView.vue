@@ -29,17 +29,12 @@
             <label for="description">Description</label>
             <textarea class="form-control" id="description" v-model="newTicket.description" required></textarea>
           </div>
-          <div class="form-group">
-            <label for="closed_by">Closed By</label>
-            <input type="text" class="form-control" id="closed_by" v-model="newTicket.closed_by">
-          </div>
-          <div class="form-group">
-            <label for="user_id">User ID</label>
-            <input type="number" class="form-control" id="user_id" v-model="newTicket.user_id" required>
-          </div>
           <div class="button-group">
             <button type="submit" class="btn btn-success">Create Ticket</button>
-            <button @click.prevent="closePopup" class="btn btn-secondary">Cancel</button>
+   
+            <button @click.prevent="closePopup" type="button" class="btn " data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
           </div>
         </form>
       </div>
@@ -88,13 +83,7 @@
             <label for="description">Description</label>
             <textarea class="form-control" v-model="selectedTicket.description" required></textarea>
           </div>
-          <div class="form-group">
-            <label for="user_id">User</label>
-            <!-- Dropdown to select users -->
-            <select v-model="selectedTicket.user_id" class="form-control" required>
-              <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-            </select>
-          </div>
+
           <div class="button-group">
             <button @click.prevent="updateTicket(ticket)" class="btn btn-sm btn-primary">Update Ticket</button>
             <button @click.prevent="closePopup" class="btn btn-sm btn-secondary">Cancel</button>
@@ -114,8 +103,9 @@
  
 <script>
 import axios from 'axios';
-
+const userID = localStorage.getItem("loggedInUserID");
 export default {
+ 
   name: "TicketDashboardView",
   data() {
     return {
@@ -126,7 +116,7 @@ export default {
         done: false,
         created_by: '',
         closed_by: '',
-        user_id: ''
+        user_id: userID
       },
       tickets: [],
       loading: false,
@@ -140,7 +130,7 @@ export default {
     };
   },
 
-
+  
   methods: {
     logout() {
       localStorage.removeItem('loggedInUser');
@@ -180,13 +170,14 @@ export default {
     },
 
     closeTicket(ticket) {
+     const userID = localStorage.getItem("loggedInUserID");
       if (!ticket.done) {
         this.loading = true;
         ticket.done = true;
-        ticket.closed_by = "System";
+        ticket.closed_by = this.loggedInUser;
         const requestBody = {
           "id": ticket.id,
-          "closed_by": user.id,
+          "closed_by": userID,
         }
         axios.put(`http://localhost:8003/tickets/close`, requestBody)
           .then(() => {
@@ -208,72 +199,43 @@ export default {
 
     updateTicket() {
       this.loading = true;
-      const id = this.selectedTicket.id;
-      axios.put(`http://localhost:8003/tickets/update`, {
-        "id": id,
-        "description": "testPut"
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
+      
+      const requestBody = {
+          "id": this.selectedTicket.id ,
+          "description": this.selectedTicket.description
         }
-      })
-        .then(res => {
-          console.log(res.data);
-          alert(res.data.message);
-          this.errorlist = '';
-        })
-        .catch(error => {
-          console.error("Error updating ticket:", error);
-          if (error.response) {
-            console.error("Response data:", error.response.data);
-            console.error("Response status:", error.response.status);
-            console.error("Response headers:", error.response.headers);
-          } else if (error.request) {
-            console.error("No response received. Request details:", error.request);
-          } else {
-            console.error("Error setting up the request:", error.message);
-          }
-        })
+        axios.put(`http://localhost:8003/tickets/update`, requestBody)
+          .then(() => {
+            this.saveDataToLocalStorage();
+            window.location.reload();
+          })
+          .catch(error => {
+            console.error('Failed to update ticket', error);
+          })
+          .finally(() => {
+            this.loading = false;
+          });
     },
 
     deleteTicket() {
-      if (!this.selectedTicket) {
-        console.error("No ticket selected for deletion");
-        return;
-      }
-
-      const id = this.selectedTicket.id;
-
+      alert(this.selectedTicket.id);
       const requestBody = {
-        ticketId: this.selectedTicket.id,
-      }
-      axios.delete(`http://localhost:8003/tickets/delete`, requestBody)
-        .then(res => {
-          console.log(res.data);
-          alert(res.data.message);
-
-          // Remove the deleted ticket from the local data
-          const index = this.tickets.findIndex(t => t.id === id);
-          if (index !== -1) {
-            this.tickets.splice(index, 1);
-            this.filteredTickets = [...this.tickets];
-            this.saveDataToLocalStorage();
-          }
-
-          this.closePopup();
+          "id": this.selectedTicket.id 
+        }
+        axios.delete(`http://localhost:8003/tickets/delete`,{
+          data: requestBody
         })
-        .catch(error => {
-          console.error("Error deleting ticket:", error);
-          if (error.response) {
-            console.error("Response data:", error.response.data);
-            console.error("Response status:", error.response.status);
-            console.error("Response headers:", error.response.headers);
-          } else if (error.request) {
-            console.error("No response received. Request details:", error.request);
-          } else {
-            console.error("Error setting up the request:", error.message);
-          }
-        });
+          .then(() => {
+            this.saveDataToLocalStorage();
+            window.location.reload();
+          })
+          .catch(error => {
+            console.error('Failed to delete ticket', error);
+          })
+          .finally(() => {
+            this.loading = false;
+          });
+
     },
     saveDataToLocalStorage() {
       localStorage.setItem('tickets', JSON.stringify(this.tickets));

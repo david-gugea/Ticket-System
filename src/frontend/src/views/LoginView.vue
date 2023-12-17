@@ -45,6 +45,7 @@ export default {
           .then(response => {
             const userData = response.data;
             if (userData) {
+              localStorage.setItem('loggedInUserID', userData.id);
               localStorage.setItem('loggedInUser', userData.username);
               this.$router.push({ name: 'ticketsDashboard' });
             } else {
