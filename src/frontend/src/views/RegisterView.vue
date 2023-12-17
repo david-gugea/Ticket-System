@@ -13,7 +13,7 @@
           <input type="password" id="password" v-model="password" class="form-input" />
         </div>
         <div class="form-group">
-          <label for="passwordConfirm" class="form-label">Password Confirmation</label>
+          <label for="passwordConfirm" class="form-label">Password Confirmation:</label>
           <input type="password" id="passwordConfirm" v-model="passwordConfirm" class="form-input" />
         </div>
         <button @click.prevent="register" :class="{ 'hover-effect': hover }" class="form-button">Register</button>
@@ -88,8 +88,14 @@ export default {
   overflow: hidden;
 }
 
+body {
+  margin: 0;
+  background-color: black;
+  overflow: hidden;
+}
+
 .background {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;

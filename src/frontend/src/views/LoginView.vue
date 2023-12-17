@@ -3,7 +3,7 @@
     <div class="background"></div>
     <div class="login-form" @mouseover="hover = true" @mouseleave="hover = false">
       <form>
-        <h2 class="form-title">Sign In</h2>
+        <h2 class="form-title">Login</h2>
         <div class="form-group">
           <label for="username" class="form-label">Username:</label>
           <input type="text" id="username" v-model="username" class="form-input" />
@@ -67,13 +67,19 @@ export default {
     overflow: hidden;
   }
   
+  body {
+    margin: 0;
+    background-color: black;
+    overflow: hidden;
+  }
+  
   .background {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(closest-corner,#1d2020, #000000);
+    background: radial-gradient(closest-corner, #1d2020, #000000);
     z-index: -1;
   }
   

@@ -39,5 +39,19 @@
   transition: transform 0.3s ease-in-out;
   image-rendering: crisp-edges;
 }
+body {
+  margin: 0;
+  background-color: black;
+  overflow: hidden;
+}
 
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(closest-corner, #1d2020, #000000);
+  z-index: -1;
+}
 </style>
