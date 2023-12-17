@@ -53,11 +53,12 @@
             <th>Description</th>
             <th>Date Created</th>
             <th>Date Closed</th>
+            <th>Created By</th>
             <th>Closed By</th>
             <th>User ID</th>
             <th>Done</th>
             <th>Close</th>
-            <th>Action</th>
+            <th></th>
           </tr>
         </thead>
         <!-- Table body with tickets -->
@@ -67,6 +68,7 @@
             <td>{{ ticket.description }}</td>
             <td>{{ formatDate(ticket.date_created) }}</td>
             <td>{{ formatDate(ticket.date_closed) }}</td>
+            <td>{{ ticket.created_by === loggedInUser ? 'You' : ticket.created_by }}</td>
             <td>{{ ticket.closed_by || '-' }}</td>
             <td>{{ ticket.user_id }}</td>
             <td>{{ ticket.done ? 'Yes' : 'No' }}</td>
@@ -87,12 +89,11 @@
             <textarea class="form-control" v-model="selectedTicket.description" required></textarea>
           </div>
           <div class="form-group">
-            <label for="closed_by">Closed By</label>
-            <input type="text" class="form-control" v-model="selectedTicket.closed_by">
-          </div>
-          <div class="form-group">
-            <label for="user_id">User ID</label>
-            <input type="number" class="form-control" v-model="selectedTicket.user_id" required>
+            <label for="user_id">User</label>
+            <!-- Dropdown to select users -->
+            <select v-model="selectedTicket.user_id" class="form-control" required>
+              <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+            </select>
           </div>
           <div class="button-group">
             <button @click.prevent="updateTicket(ticket)" class="btn btn-sm btn-primary">Update Ticket</button>
@@ -123,6 +124,7 @@ export default {
         date_created: '',
         date_closed: '',
         done: false,
+        created_by: '',
         closed_by: '',
         user_id: ''
       },
@@ -141,13 +143,8 @@ export default {
 
   methods: {
     logout() {
-      // Implement your logout logic here, such as clearing user data and redirecting
-      // For example, clearing localStorage and redirecting to the login page
       localStorage.removeItem('loggedInUser');
-      // Add more logic as needed
-
-      // For redirecting to the login page
-      this.$router.push('/'); // Update the route accordingly
+      this.$router.push('/'); 
     },
     createTicket() {
       this.loading = true;
@@ -159,12 +156,14 @@ export default {
             date_created: '',
             date_closed: '',
             done: false,
+            created_by: this.loggedInUser,
             closed_by: '',
             user_id: '',
             selectedTicket: null
           };
           this.saveDataToLocalStorage();
           this.closePopup();
+          window.location.reload(); 
         })
         .catch(error => {
           console.error('Failed to create ticket', error);
@@ -173,7 +172,6 @@ export default {
           this.loading = false;
         });
     },
-
     filterTable() {
       // Filter the table based on the searchQuery
       this.filteredTickets = this.tickets.filter(ticket =>
@@ -254,7 +252,15 @@ export default {
           console.log(res.data);
           alert(res.data.message);
 
-          this.selectedTicket = null;
+          // Remove the deleted ticket from the local data
+          const index = this.tickets.findIndex(t => t.id === id);
+          if (index !== -1) {
+            this.tickets.splice(index, 1);
+            this.filteredTickets = [...this.tickets];
+            this.saveDataToLocalStorage();
+          }
+
+          this.closePopup();
         })
         .catch(error => {
           console.error("Error deleting ticket:", error);
@@ -530,8 +536,14 @@ th {
   }
 }
 
+body {
+  margin: 0;
+  background-color: black;
+  overflow: hidden;
+}
+
 .background {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
