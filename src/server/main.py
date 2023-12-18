@@ -35,7 +35,7 @@ def get_user_by_username_password(username: str, password: str, db: Session = De
     if user is None:
         return HTTPException(status_code=404, detail="User not found or wrong credentials.")
     else:
-        return schemas.UserUsernameId(username=user.username, id=user.id)
+        return schemas.UserUsernameId(username=user.username, id=user.id, user_type=user.user_type)
 
 @app.get("/users/get_by/id")
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
@@ -45,10 +45,10 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     if user is None:
         return HTTPException(status_code=404, detail="User not found or wrong credentials.")
     else:
-        return schemas.UserUsernameId(username=user.username, id=user.id)
+        return schemas.UserUsernameId(username=user.username, id=user.id, user_type=user.user_type)
 
 @app.post("/users/create")
-def create_user(user: schemas.UserUsernamePassword, db: Session = Depends(get_db)):
+def create_user(user: schemas.UserUsernamePasswordUserType, db: Session = Depends(get_db)):
     """Create a new user in the database. If the user already exists, return 400 error"""
     find_user = crud.get_user_by_username_password(db, user.username, user.password)
 
@@ -60,7 +60,7 @@ def create_user(user: schemas.UserUsernamePassword, db: Session = Depends(get_db
     if user is None:
         return HTTPException(status_code=400, detail="Something went wrong when creating the user")
     else:
-        return schemas.UserUsernameId(id=new_user.id, username=new_user.username)
+        return schemas.UserUsernameId(id=new_user.id, username=new_user.username, user_type=new_user.user_type)
 
 @app.get("/tickets/get")
 def get_ticket_by_id(ticket_id: int, db: Session = Depends(get_db)):

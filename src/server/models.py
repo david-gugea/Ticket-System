@@ -9,6 +9,7 @@ class User(Base):
     id=Column(Integer, primary_key=True, index=True)
     username=Column(Text, unique=True)
     password=Column(Text)
+    user_type=Column(Text)
     salt=Column(Text)
 
     created_tickets = relationship("Ticket", foreign_keys="[Ticket.user_id]", back_populates="user")

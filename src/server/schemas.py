@@ -4,11 +4,12 @@ from pydantic import BaseModel
 
 class UserBase(BaseModel):
     username: str
+    user_type: str
 
     class Config:
         from_attributes=True
 
-class UserUsernamePassword(UserBase):
+class UserUsernamePasswordUserType(UserBase):
     password: str
 
     class Config:

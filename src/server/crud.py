@@ -16,9 +16,9 @@ def hash_password(password: str) -> str:
 def gen_salt() -> str:
     return secrets.token_hex(16)
 
-def create_user(db: Session, user: schemas.UserUsernamePassword):
+def create_user(db: Session, user: schemas.UserUsernamePasswordUserType):
     """Add a new user to the database"""
-    new_user = models.User(**user.dict())
+    new_user = models.User(**user.model_dump())
     salt = gen_salt()
     hashed_password = hash_password(f"{user.password}:{salt}")
     new_user.password = hashed_password
@@ -63,7 +63,7 @@ def get_all_tickets_by_user_id(user_id: int, db: Session):
 
 def create_ticket(db: Session, ticket: schemas.TicketCreate):
     """Add a new ticket to the database"""
-    new_ticket = models.Ticket(**ticket.dict())
+    new_ticket = models.Ticket(**ticket.model_dump())
     new_ticket.date_created = datetime.date.today()
     db.add(new_ticket)
     db.commit()
