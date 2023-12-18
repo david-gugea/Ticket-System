@@ -44,11 +44,14 @@ export default {
         axios.get(apiUrl)
           .then(response => {
             const userData = response.data;
-            if (userData) {
+            console.log(userData.status_code);
+            if (userData.status_code === 404) {
+              alert('Invalid username or password');
+            } else {
+
+              localStorage.setItem('loggedInUserID', userData.id);
               localStorage.setItem('loggedInUser', userData.username);
               this.$router.push({ name: 'ticketsDashboard' });
-            } else {
-              alert('Invalid username or password');
             }
           })
       }

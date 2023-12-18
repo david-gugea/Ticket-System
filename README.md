@@ -2,7 +2,7 @@
 
 ## User types
 
-* Customer: read only
+* Customer: create, can read only his own ticket
 * Developer: create read update
 * Admin : create read update delete
 

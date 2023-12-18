@@ -55,23 +55,18 @@ export default {
 
   axios.post(apiUrl, requestData)
     .then(response => {
-      if (response.status === 200 || response.status === 201) {
-        console.log('Registration successful!', response.data);
-        alert('Registration successful!');
-      } else {
-        console.error('Unexpected status code:', response.status);
-        alert('Registration failed!');
-      }
+    if(response.data.status_code === 400){
+      alert("Username already exists");
+    } else{
+      alert("Registration success")
+      this.$router.push({ name: 'login' })
+    }
     })
     .catch(error => {
       console.error('Registration failed!', error);
+      alert("Username or password is wrong!");
 
-      if (error.response && error.response.status === 400) {
-        console.error('User already exists.');
-        alert('User already exists.');
-      } else {
-        alert('Registration failed!');
-      }
+  
     });
 },
   },

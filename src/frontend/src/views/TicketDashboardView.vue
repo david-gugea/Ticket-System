@@ -1,8 +1,12 @@
 <template>
   <!-- User Profile Section -->
+
   <div class="user-profile" @mouseover="showProfileDropdown = true" @mouseleave="showProfileDropdown = false">
     <img src="../assets/userAvatar.png" alt="User Profile Image" class="profile-image" />
     <p class="logged-in-user">User: <span>{{ loggedInUser }}</span></p>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
 
     <!-- User Profile Dropdown -->
     <div v-if="showProfileDropdown" class="profile-dropdown">
@@ -19,8 +23,8 @@
     <div class="background"></div>
     <div class="ticket-dashboard" @mouseover="hover = true" @mouseleave="hover = false">
       <!-- Button to open the pop-up form -->
-      <button @click="openPopup" :class="{ 'hover-effect': hover }" class="btn btn-primary add-ticket-btn">Add
-        Ticket</button>
+      <button @click="openPopup" :class="{ 'hover-effect': hover }" class="round-luxury-button"></button>
+
 
       <!-- Pop-up form -->
       <div v-if="isPopupVisible" class="popup">
@@ -29,17 +33,10 @@
             <label for="description">Description</label>
             <textarea class="form-control" id="description" v-model="newTicket.description" required></textarea>
           </div>
-          <div class="form-group">
-            <label for="closed_by">Closed By</label>
-            <input type="text" class="form-control" id="closed_by" v-model="newTicket.closed_by">
-          </div>
-          <div class="form-group">
-            <label for="user_id">User ID</label>
-            <input type="number" class="form-control" id="user_id" v-model="newTicket.user_id" required>
-          </div>
           <div class="button-group">
             <button type="submit" class="btn btn-success">Create Ticket</button>
-            <button @click.prevent="closePopup" class="btn btn-secondary">Cancel</button>
+            <button @click.prevent="closePopup" type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+            </button>
           </div>
         </form>
       </div>
@@ -68,7 +65,7 @@
             <td>{{ ticket.description }}</td>
             <td>{{ formatDate(ticket.date_created) }}</td>
             <td>{{ formatDate(ticket.date_closed) }}</td>
-            <td>{{ ticket.created_by === loggedInUser ? 'You' : ticket.created_by }}</td>
+            <td><span>{{ loggedInUser }}</span></td>
             <td>{{ ticket.closed_by || '-' }}</td>
             <td>{{ ticket.user_id }}</td>
             <td>{{ ticket.done ? 'Yes' : 'No' }}</td>
@@ -88,13 +85,7 @@
             <label for="description">Description</label>
             <textarea class="form-control" v-model="selectedTicket.description" required></textarea>
           </div>
-          <div class="form-group">
-            <label for="user_id">User</label>
-            <!-- Dropdown to select users -->
-            <select v-model="selectedTicket.user_id" class="form-control" required>
-              <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-            </select>
-          </div>
+
           <div class="button-group">
             <button @click.prevent="updateTicket(ticket)" class="btn btn-sm btn-primary">Update Ticket</button>
             <button @click.prevent="closePopup" class="btn btn-sm btn-secondary">Cancel</button>
@@ -114,8 +105,11 @@
  
 <script>
 import axios from 'axios';
-
+const userID = localStorage.getItem("loggedInUserID");
+const user = localStorage.getItem("loggedInUser");
+alert(user);
 export default {
+
   name: "TicketDashboardView",
   data() {
     return {
@@ -124,9 +118,9 @@ export default {
         date_created: '',
         date_closed: '',
         done: false,
-        created_by: '',
+        created_by: user,
         closed_by: '',
-        user_id: ''
+        user_id: userID
       },
       tickets: [],
       loading: false,
@@ -144,9 +138,12 @@ export default {
   methods: {
     logout() {
       localStorage.removeItem('loggedInUser');
-      this.$router.push('/'); 
+      localStorage.removeItem('loggedInUserID');
+      this.$router.push('/');
     },
     createTicket() {
+      const user = localStorage.getItem("loggedInUser");
+      alert(user);
       this.loading = true;
       axios.post('http://localhost:8003/tickets/create', this.newTicket)
         .then(response => {
@@ -156,14 +153,14 @@ export default {
             date_created: '',
             date_closed: '',
             done: false,
-            created_by: this.loggedInUser,
+            created_by: user,
             closed_by: '',
             user_id: '',
             selectedTicket: null
           };
           this.saveDataToLocalStorage();
           this.closePopup();
-          window.location.reload(); 
+          window.location.reload();
         })
         .catch(error => {
           console.error('Failed to create ticket', error);
@@ -180,13 +177,16 @@ export default {
     },
 
     closeTicket(ticket) {
+      const userID = localStorage.getItem("loggedInUserID");
+
       if (!ticket.done) {
         this.loading = true;
         ticket.done = true;
-        ticket.closed_by = "System";
+        ticket.date_closed = Date.now();
+        ticket.closed_by = this.loggedInUser;
         const requestBody = {
           "id": ticket.id,
-          "closed_by": user.id,
+          "closed_by": userID,
         }
         axios.put(`http://localhost:8003/tickets/close`, requestBody)
           .then(() => {
@@ -208,72 +208,43 @@ export default {
 
     updateTicket() {
       this.loading = true;
-      const id = this.selectedTicket.id;
-      axios.put(`http://localhost:8003/tickets/update`, {
-        "id": id,
-        "description": "testPut"
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      })
-        .then(res => {
-          console.log(res.data);
-          alert(res.data.message);
-          this.errorlist = '';
+
+      const requestBody = {
+        "id": this.selectedTicket.id,
+        "description": this.selectedTicket.description
+      }
+      axios.put(`http://localhost:8003/tickets/update`, requestBody)
+        .then(() => {
+          this.saveDataToLocalStorage();
+          window.location.reload();
         })
         .catch(error => {
-          console.error("Error updating ticket:", error);
-          if (error.response) {
-            console.error("Response data:", error.response.data);
-            console.error("Response status:", error.response.status);
-            console.error("Response headers:", error.response.headers);
-          } else if (error.request) {
-            console.error("No response received. Request details:", error.request);
-          } else {
-            console.error("Error setting up the request:", error.message);
-          }
+          console.error('Failed to update ticket', error);
         })
+        .finally(() => {
+          this.loading = false;
+        });
     },
 
     deleteTicket() {
-      if (!this.selectedTicket) {
-        console.error("No ticket selected for deletion");
-        return;
-      }
-
-      const id = this.selectedTicket.id;
-
+      alert(this.selectedTicket.id);
       const requestBody = {
-        ticketId: this.selectedTicket.id,
+        "id": this.selectedTicket.id
       }
-      axios.delete(`http://localhost:8003/tickets/delete`, requestBody)
-        .then(res => {
-          console.log(res.data);
-          alert(res.data.message);
-
-          // Remove the deleted ticket from the local data
-          const index = this.tickets.findIndex(t => t.id === id);
-          if (index !== -1) {
-            this.tickets.splice(index, 1);
-            this.filteredTickets = [...this.tickets];
-            this.saveDataToLocalStorage();
-          }
-
-          this.closePopup();
+      axios.delete(`http://localhost:8003/tickets/delete`, {
+        data: requestBody
+      })
+        .then(() => {
+          this.saveDataToLocalStorage();
+          window.location.reload();
         })
         .catch(error => {
-          console.error("Error deleting ticket:", error);
-          if (error.response) {
-            console.error("Response data:", error.response.data);
-            console.error("Response status:", error.response.status);
-            console.error("Response headers:", error.response.headers);
-          } else if (error.request) {
-            console.error("No response received. Request details:", error.request);
-          } else {
-            console.error("Error setting up the request:", error.message);
-          }
+          console.error('Failed to delete ticket', error);
+        })
+        .finally(() => {
+          this.loading = false;
         });
+
     },
     saveDataToLocalStorage() {
       localStorage.setItem('tickets', JSON.stringify(this.tickets));
@@ -284,6 +255,7 @@ export default {
         this.tickets = JSON.parse(storedTickets);
       }
     },
+
     formatDate(dateString) {
       if (dateString) {
         const date = new Date(dateString);
@@ -300,10 +272,16 @@ export default {
     },
   },
   mounted() {
+    const newUserID = localStorage.getItem('loggedInUserID');
+    alert(newUserID)
     this.loggedInUser = localStorage.getItem('loggedInUser');
     this.loading = true;
     this.loadDataFromLocalStorage();
-    axios.get('http://localhost:8003/tickets/get_all')
+    axios.get(`http://localhost:8003/tickets/get_by_user_id`, {
+      params: {
+        user_id: newUserID,
+      }
+    })
       .then(response => {
         this.tickets = response.data;
         this.filteredTickets = [...this.tickets];
@@ -315,10 +293,230 @@ export default {
       .finally(() => {
         this.loading = false;
       });
+
+
+
+
   }
 };
 </script>
 <style scoped>
+.box-menu {
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  cursor: pointer;
+  background: #eba440;
+  width: 60px;
+  height: 60px;
+  box-shadow: 2px 3px 5px rgba(0, 0, 0, .3);
+  border-radius: 60px;
+  transition: height .4s;
+}
+
+.full-menu {
+  height: 300px;
+}
+
+.wrapper {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.hamburger {
+  position: absolute;
+  left: 22px;
+  top: 22px;
+  width: 16px;
+  height: 16px;
+}
+
+.hamburger span {
+  position: absolute;
+  display: inline-block;
+  height: 2px;
+  width: 100%;
+  background: #050d4b;
+  border-radius: 10px;
+  transition: all .3s;
+}
+
+.hamburger span:nth-child(1) {
+  top: 3px;
+}
+
+.hamburger span:nth-child(2) {
+  top: 8px;
+}
+
+.hamburger span:nth-child(3) {
+  top: 8px;
+}
+
+.hamburger span:nth-child(4) {
+  top: 13px;
+}
+
+.hamburger.active span:nth-child(1) {
+  width: 0;
+  margin-left: 8px;
+}
+
+.hamburger.active span:nth-child(2) {
+  transform: rotate(45deg);
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg);
+}
+
+.hamburger.active span:nth-child(4) {
+  width: 0;
+  margin-left: 8px;
+}
+
+.menu {
+  position: relative;
+  left: -9999px;
+}
+
+.menu a {
+  white-space: nowrap;
+  position: relative;
+  display: inline-block;
+  color: #333;
+  text-decoration: none;
+  width: 150px;
+  height: 58px;
+  line-height: 58px;
+  font-family: Ubuntu;
+}
+
+.menu a::after {
+  content: '';
+  position: absolute;
+  left: 50px;
+  width: 15px;
+  background: #e1a754;
+  transition: height .3s, top .3s;
+  transform: rotateZ(43deg);
+}
+
+.menu a.active::after {
+  top: 19px;
+  height: 20px;
+}
+
+.menu a span {
+  opacity: 0;
+  display: inline-block;
+  font-size: 14px;
+}
+
+.menu a span.icon {
+  transform: scale(.5);
+  color: #050d4b;
+  font-size: 18px;
+  display: inline-block;
+  width: 60px;
+  text-align: center;
+  transition: transform .3s;
+}
+
+.menu a span.text {
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  margin-left: 40px;
+  color: #eba440;
+  transition: margin .3s, opacity .3s, transform .3s;
+}
+
+.full-menu .menu {
+  left: 0;
+}
+
+.full-menu .menu a:hover span {
+  opacity: 1;
+}
+
+.full-menu .menu a span {
+  opacity: .8;
+}
+
+.full-menu .menu a span.icon {
+  transform: scale(1.1);
+}
+
+.full-menu .menu a span.text {
+  margin-left: 25px;
+}
+
+.full-menu .menu a:hover span.text {
+  transform: translateX(5px);
+  transition-delay: 0s;
+}
+
+.menu a:nth-child(1) span {
+  transition: all .5s .1s, opacity .5s 0s, transform .5s 0s;
+}
+
+.menu a:nth-child(2) span {
+  transition: all .5s .15s, opacity .5s 0s, transform .5s 0s;
+}
+
+.menu a:nth-child(3) span {
+  transition: all .5s .2s, opacity .5s 0s, transform .5s 0s;
+}
+
+.menu a:nth-child(4) span {
+  transition: all .5s .25s, opacity .5s 0s, transform .5s 0s;
+}
+
+.round-luxury-button {
+  position: absolute;
+  display: flex;
+  top: 1px;
+
+  width: 96%;
+  border-radius: 4px;
+  height: 30px;
+  font-size: 20px;
+  font-weight: lighter;
+  color: #fff;
+  text-align: right;
+  text-decoration: none;
+  border: none;
+  background-color: #68d2df;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.6s, transform 0.6s, box-shadow 0.6s;
+
+}
+
+.round-luxury-button::before {
+  content: "+";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.5);
+  /* Adjust the scale for a larger plus */
+  opacity: 0.5;
+  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+    opacity 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.round-luxury-button:hover {
+  background-color: #68d2df;
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.round-luxury-button:hover::before {
+  transform: translate(-50%, -50%) scale(2);
+  /* Adjust the scale for an even larger plus on hover */
+  opacity: 1;
+}
+
 .profile-dropdown {
   position: absolute;
   top: 100%;
@@ -397,19 +595,64 @@ export default {
 }
 
 .popup {
-  display: block;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #292b2c;
+  background: #fff;
   padding: 20px;
-  border: 1px solid #333;
+  border: 1px solid #ddd;
   z-index: 1000;
   max-width: 400px;
   width: 100%;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.popup form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  background-color: #5cb85c;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-close {
+  background-color: #d9534f;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .form-group {
@@ -427,14 +670,55 @@ export default {
   transition: background-color 0.3s;
 }
 
+@media (max-width: 768px) {
+  .ticket-dashboard {
+    padding: 10px;
+  }
+
+  .add-ticket-btn {
+    top: 1px;
+    right: 10px;
+    font-size: 14px;
+    padding: 5px;
+  }
+
+  .table {
+    margin-top: 10px;
+  }
+
+  .user-profile {
+    top: 10px;
+    right: 10px;
+  }
+
+  .search-bar input {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
 .btn-secondary {
   background-color: #7f8c8d;
   color: #ecf0f1;
 }
 
 .btn-success {
-  background-color: #27ae60;
+  background-color: #68d2df;
   color: #ecf0f1;
+}
+
+.btn-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transition: transform 0.3s ease-in-out;
+  background-color: #7f8c8d;
+  color: #ecf0f1;
+}
+
+.btn-close:hover {
+  transform: scale(1.2);
+  /* Adjust the scale factor as needed */
 }
 
 .table {
@@ -475,7 +759,8 @@ th {
 
 .spinner {
   border: 6px solid rgba(255, 255, 255, 0.3);
-  border-top: 6px solid #68d2df; /* Change the color as needed */
+  border-top: 6px solid #68d2df;
+  /* Change the color as needed */
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -483,8 +768,13 @@ th {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .ticketDasboard-container {
@@ -550,7 +840,6 @@ body {
   height: 100%;
   background: radial-gradient(closest-corner, #1d2020, #000000);
   z-index: -1;
-}
-</style>
+}</style>
  
  
