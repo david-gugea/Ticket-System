@@ -9,6 +9,12 @@ class UserBase(BaseModel):
     class Config:
         from_attributes=True
 
+class UserOut(UserBase):
+    id: int
+
+    class Config:
+        from_attributes=True
+
 class UserUsernamePasswordUserType(UserBase):
     password: str
 
@@ -23,6 +29,13 @@ class UserUserId(BaseModel):
 
 class UserUsernameId(UserBase):
     id: int
+
+    class Config:
+        from_attributes=True
+
+class UserUpdateUserType(BaseModel):
+    id: int
+    user_type: str
 
     class Config:
         from_attributes=True

@@ -62,6 +62,33 @@ def create_user(user: schemas.UserUsernamePasswordUserType, db: Session = Depend
     else:
         return schemas.UserUsernameId(id=new_user.id, username=new_user.username, user_type=new_user.user_type)
 
+@app.get("/users/get_all")
+def get_all_users(db: Session = Depends(get_db)):
+    """Get all users"""
+    users = crud.get_all_users(db)
+    user_out_list: list[schemas.UserOut] = []
+    for user in users:
+        user_out_list.append(
+            schemas.UserOut(
+                id=user.id,
+                username=user.username,
+                user_type=user.user_type,
+            )
+        )
+
+    return user_out_list
+
+@app.put("/users/update_user_type")
+def update_user_type(update_user_type_schema: schemas.UserUpdateUserType, db: Session = Depends(get_db)):
+    """Change the type of the user with the provided user id"""
+
+    updated_user = crud.update_user_type(update_user_type_schema, db)
+    return schemas.UserOut(
+        id=updated_user.id,
+        username=updated_user.username,
+        user_type=updated_user.user_type,
+    )
+
 @app.get("/tickets/get")
 def get_ticket_by_id(ticket_id: int, db: Session = Depends(get_db)):
     """Get ticket from the database based on the provided ticket id. If the ticket couldn't be found, return a 404 error"""

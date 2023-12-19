@@ -45,6 +45,17 @@ def get_user_by_username_password(db: Session, username: str, password: str):
     else:
         return db_user
 
+def get_all_users(db: Session):
+    """Get all users"""
+    return db.query(models.User).all()
+
+def update_user_type(user_update_type: schemas.UserUpdateUserType, db: Session):
+    user= db.query(models.User).filter(models.User.id==user_update_type.id).first()
+    user.user_type = user_update_type.user_type
+    db.commit()
+
+    return user
+
 def get_user_by_id(db: Session, user_id: int):
     """Get the data of an existing user based on username and password"""
     return db.query(models.User).filter(models.User.id == user_id).first()
