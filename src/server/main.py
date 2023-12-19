@@ -78,11 +78,11 @@ def get_all_users(db: Session = Depends(get_db)):
 
     return user_out_list
 
-@app.put("/users/change_user_type")
+@app.put("/users/update_user_type")
 def update_user_type(update_user_type_schema: schemas.UserUpdateUserType, db: Session = Depends(get_db)):
     """Change the type of the user with the provided user id"""
 
-    updated_user = crud.change_user_type(update_user_type_schema, db)
+    updated_user = crud.update_user_type(update_user_type_schema, db)
     return schemas.UserOut(
         id=updated_user.id,
         username=updated_user.username,

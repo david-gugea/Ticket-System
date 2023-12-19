@@ -49,7 +49,7 @@ def get_all_users(db: Session):
     """Get all users"""
     return db.query(models.User).all()
 
-def change_user_type(user_update_type: schemas.UserUpdateUserType, db: Session):
+def update_user_type(user_update_type: schemas.UserUpdateUserType, db: Session):
     user= db.query(models.User).filter(models.User.id==user_update_type.id).first()
     user.user_type = user_update_type.user_type
     db.commit()
