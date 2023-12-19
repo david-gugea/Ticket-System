@@ -51,6 +51,7 @@ export default {
 
               localStorage.setItem('loggedInUserID', userData.id);
               localStorage.setItem('loggedInUser', userData.username);
+              localStorage.setItem('loggedInUserType', userData.user_type);
               this.$router.push({ name: 'ticketsDashboard' });
             }
           })

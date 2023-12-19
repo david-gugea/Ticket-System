@@ -39,10 +39,10 @@
   transition: transform 0.3s ease-in-out;
   image-rendering: crisp-edges;
 }
-body {
+section {
   margin: 0;
   background-color: black;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .background {

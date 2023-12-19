@@ -1,49 +1,30 @@
 <template>
-  <!-- User Profile Section -->
-
-  <div class="user-profile" @mouseover="showProfileDropdown = true" @mouseleave="showProfileDropdown = false">
-    <img src="../assets/userAvatar.png" alt="User Profile Image" class="profile-image" />
-    <p class="logged-in-user">User: <span>{{ loggedInUser }}</span></p>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-
-    <!-- User Profile Dropdown -->
-    <div v-if="showProfileDropdown" class="profile-dropdown">
-      <!-- Add more user-related options as needed -->
-      <button @click="logout" class="logout-btn">Logout</button>
-    </div>
-  </div>
-  <!-- Search Bar Section -->
-  <div class="search-bar">
-    <input type="text" v-model="searchQuery" placeholder="Search..." @input="filterTable">
-  </div>
-  <div class="ticketDasboard-container">
-
-    <div class="background"></div>
-    <div class="ticket-dashboard" @mouseover="hover = true" @mouseleave="hover = false">
-      <!-- Button to open the pop-up form -->
-      <button @click="openPopup" :class="{ 'hover-effect': hover }" class="round-luxury-button"></button>
+  <section>
+  <div class="fullSize">
+    <div id="top-container">
+      <div class="user-profile" @mouseover="showProfileDropdown = true" @mouseleave="showProfileDropdown = false">
+        <button ref="userButton" @click="openUserPopup">Users</button>
+        <img src="../assets/userAvatar.png" alt="User Profile Image" class="profile-image" />
+        <p class="logged-in-user">User: <span>{{ loggedInUser }}</span></p>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-      <!-- Pop-up form -->
-      <div v-if="isPopupVisible" class="popup">
-        <form @submit.prevent="createTicket">
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea class="form-control" id="description" v-model="newTicket.description" required></textarea>
-          </div>
-          <div class="button-group">
-            <button type="submit" class="btn btn-success">Create Ticket</button>
-            <button @click.prevent="closePopup" type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
-            </button>
-          </div>
-        </form>
+
+        <!-- User Profile Dropdown -->
+        <div v-if="showProfileDropdown" class="profile-dropdown">
+          <!-- Add more user-related options as needed -->
+          <button @click="logout" class="logout-btn">Logout</button>
+        </div>
       </div>
+      <!-- Search Bar Section -->
+      <div class="search-bar">
+        <input type="text" v-model="searchQuery" placeholder="Search..." @input="filterTable">
+      </div>
+    </div>
 
-      <!-- Display a table of all tickets -->
-      <table class="table mt-4">
-        <!-- Table headers -->
+    <div id="table-container">
+      <button id="wide-button" @click="openPopup" :class="{ 'hover-effect': hover }"></button>
+      <table>
         <thead>
           <tr>
             <th>ID</th>
@@ -58,7 +39,6 @@
             <th></th>
           </tr>
         </thead>
-        <!-- Table body with tickets -->
         <tbody>
           <tr v-for="ticket in filteredTickets" :key="ticket.id">
             <td>{{ ticket.id }}</td>
@@ -77,38 +57,107 @@
           </tr>
         </tbody>
       </table>
-
-      <!-- Edit Ticket Popup -->
-      <div v-if="selectedTicket" class="popup">
-        <form>
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea class="form-control" v-model="selectedTicket.description" required></textarea>
-          </div>
-
-          <div class="button-group">
-            <button @click.prevent="updateTicket(ticket)" class="btn btn-sm btn-primary">Update Ticket</button>
-            <button @click.prevent="closePopup" class="btn btn-sm btn-secondary">Cancel</button>
-            <button @click.prevent="deleteTicket" class="btn btn-sm btn-danger">Delete Ticket</button>
-          </div>
-        </form>
-      </div>
-
-
-      <!-- Loading spinner -->
-      <div v-if="loading" class="loading-spinner" role="status">
-        <div class="spinner"></div>
-      </div>
     </div>
   </div>
+
+    <!-- Pop-up form -->
+    <div v-if="isPopupVisible" class="popup">
+      <form @submit.prevent="createTicket">
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" id="description" v-model="newTicket.description" required></textarea>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="btn btn-success">Create Ticket</button>
+          <button @click.prevent="closePopup" type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+          </button>
+        </div>
+      </form>
+    </div>
+
+
+    <div v-if="users" class="popupUser">
+      <form @submit.prevent="createTicket">
+        <div class="form-group">
+          <div id="table-container">
+            <table class="tablePopup">
+              <thead>
+                  <tr class="tablePopupTr">
+                      <th>User ID</th>
+                      <th>User Name</th>
+                      <th>User Type</th>
+                      <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr class="tablePopupTr">
+                      <td>Data 1</td>
+                      <td>Data 2</td>
+                      <td>Data 3</td>
+                  </tr>
+                  <tr class="tablePopupTr">
+                      <td>Data 4</td>
+                      <td>Data 5</td>
+                      <td>Data 6</td>
+                  </tr>
+                  <tr class="tablePopupTr">
+                    <td>Data 4</td>
+                    <td>Data 5</td>
+                    <td>Data 6</td>
+                </tr>
+                <tr class="tablePopupTr">
+                  <td>Data 4</td>
+                  <td>Data 5</td>
+                  <td>Data 6</td>
+              </tr>
+              <tr class="tablePopupTr">
+                <td>Data 4</td>
+                <td>Data 5</td>
+                <td><button>Edit</button></td>
+            </tr>
+           
+              </tbody>
+          </table>
+          </div>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="btn btn-success">Create Ticket</button>
+          <button @click="closeUserPopup" type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+          </button>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- Edit Ticket Popup -->
+    <div v-if="selectedTicket" class="popup">
+      <form>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" v-model="selectedTicket.description" required></textarea>
+        </div>
+
+        <div class="button-group">
+          <button @click.prevent="updateTicket(ticket)" class="btn btn-sm btn-primary">Update Ticket</button>
+          <button @click.prevent="closePopup" class="btn btn-sm btn-secondary">Cancel</button>
+          <button @click.prevent="deleteTicket" class="btn btn-sm btn-danger">Delete Ticket</button>
+        </div>
+      </form>
+    </div>
+
+    <div v-if="loading" class="loading-spinner" role="status">
+      <div class="spinner"></div>
+    </div>
+  </section>
 </template>
  
 <script>
 import axios from 'axios';
 const userID = localStorage.getItem("loggedInUserID");
 const user = localStorage.getItem("loggedInUser");
-alert(user);
+
 export default {
+
 
   name: "TicketDashboardView",
   data() {
@@ -126,6 +175,7 @@ export default {
       loading: false,
       isPopupVisible: false,
       hover: false,
+      users:false,
       selectedTicket: null,
       loggedInUser: '',
       searchQuery: '',
@@ -143,7 +193,6 @@ export default {
     },
     createTicket() {
       const user = localStorage.getItem("loggedInUser");
-      alert(user);
       this.loading = true;
       axios.post('http://localhost:8003/tickets/create', this.newTicket)
         .then(response => {
@@ -175,6 +224,15 @@ export default {
         ticket.description.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
+
+    openUserPopup(){
+      this.users = true;
+    },
+
+    closeUserPopup(){
+      this.users = false;
+    },
+
 
     closeTicket(ticket) {
       const userID = localStorage.getItem("loggedInUserID");
@@ -227,7 +285,6 @@ export default {
     },
 
     deleteTicket() {
-      alert(this.selectedTicket.id);
       const requestBody = {
         "id": this.selectedTicket.id
       }
@@ -273,10 +330,30 @@ export default {
   },
   mounted() {
     const newUserID = localStorage.getItem('loggedInUserID');
-    alert(newUserID)
     this.loggedInUser = localStorage.getItem('loggedInUser');
+    const username = localStorage.getItem('loggedInUserType');
     this.loading = true;
-    this.loadDataFromLocalStorage();
+    if(username === "admin"){
+     
+     
+      axios.get(`http://localhost:8003/tickets/get_all`)
+      .then(response => {
+        this.tickets = response.data;
+        this.filteredTickets = [...this.tickets];
+        this.saveDataToLocalStorage();
+      })
+      .catch(error => {
+        console.error('Failed to fetch tickets', error);
+      })
+      .finally(() => {
+        this.loading = false;
+      });
+
+    } else {
+      const userButton = this.$refs.userButton
+      userButton.style.display= 'none'
+//Get by UserID 
+this.loadDataFromLocalStorage();
     axios.get(`http://localhost:8003/tickets/get_by_user_id`, {
       params: {
         user_id: newUserID,
@@ -293,6 +370,11 @@ export default {
       .finally(() => {
         this.loading = false;
       });
+    }
+
+
+
+    
 
 
 
@@ -301,6 +383,92 @@ export default {
 };
 </script>
 <style scoped>
+*{
+  margin: 0;
+  padding: 0;
+}
+.fullSize{
+  min-height: 100vh;
+  z-index: -1;
+  background: radial-gradient(closest-corner, #1d2020, #000000);
+
+}
+
+
+
+
+
+
+
+
+#top-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px; 
+}
+
+#left-placeholder,
+#center-placeholder,
+#right-placeholder {
+  width: 50px;
+  height: 20px;
+  background-color: #ccc;
+}
+
+.top {
+  width: 50px;
+  height: 20px;
+  background-color: #ccc;
+}
+
+#table-container {
+  margin: 20px;
+
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+#wide-button {
+  width: 97%;
+  padding: 15px;
+  background-color: #68d2df;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 10px; /* Adjust this value to control the space */
+  transition: background-color 0.3s;
+}
+
+
+#wide-button:before {
+  content: "+";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  
+  /* Adjust the scale for a larger plus */
+  opacity: 0.5;
+
+}
+
+#wide-button:hover {
+  background-color: #57b0c9; /* Change this color to your desired hover color */
+}
+
+
+
+
 .box-menu {
   position: absolute;
   left: 50px;
@@ -493,33 +661,11 @@ export default {
 
 }
 
-.round-luxury-button::before {
-  content: "+";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(1.5);
-  /* Adjust the scale for a larger plus */
-  opacity: 0.5;
-  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55),
-    opacity 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-}
 
-.round-luxury-button:hover {
-  background-color: #68d2df;
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.round-luxury-button:hover::before {
-  transform: translate(-50%, -50%) scale(2);
-  /* Adjust the scale for an even larger plus on hover */
-  opacity: 1;
-}
 
 .profile-dropdown {
   position: absolute;
-  top: 100%;
+  top: 70px;
   right: 0;
   margin-left: 10%;
   background-color: #292b2c;
@@ -609,6 +755,31 @@ export default {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   opacity: 0;
   animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+
+.popupUser{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.tablePopup{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.tablePopupTr{
+  border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
 }
 
 .popup form {
@@ -725,9 +896,10 @@ export default {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10%;
-  overflow: hidden;
+  overflow: auto;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   font-size: 16px;
+
 }
 
 th,
@@ -740,8 +912,12 @@ td {
 }
 
 th {
-  background-color: #68d2df;
+  position: sticky;
+  top: 0;
+  background-color: #292b2c;
   color: white;
+  z-index: 1;
+
 }
 
 .loading-spinner {
@@ -806,6 +982,19 @@ th {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
+}
+
+@media screen and (max-width: 600px) {
+  table {
+    width: 100%;
+  }
+
+  th,
+  td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 

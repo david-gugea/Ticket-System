@@ -36,6 +36,7 @@ export default {
       password: '',
       passwordConfirm: '', 
       hover: false,
+      user_type: ''
     };
   },
   methods: {
@@ -50,7 +51,8 @@ export default {
 
   const requestData = {
     username: this.username,
-    password: this.password
+    password: this.password,
+    user_type: "admin"
   };
 
   axios.post(apiUrl, requestData)
