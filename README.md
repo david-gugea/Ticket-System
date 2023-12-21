@@ -2,14 +2,14 @@
 
 ## User types
 
-* Customer: create, can read only his own ticket
-* Developer: create read update
-* Admin : create read update delete
+* Customer: create, read, update and delete his own Ticket
+* Developer: create, read, update and delete all tickets
+* Admin : create, read, update and delete all tickets + can update User roles
 
 ## Tech Stack
 
 * UI/UX Design: Figma
-* Frontend: Vue
+* Frontend: Vue3 and js
 * Backend: Python (fast-api)
 * DB: postgresql (containerized)
 * HTML/CSS: UI Library (~)
