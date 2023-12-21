@@ -1,6 +1,4 @@
 <template>
-
-
   <div>
     <div v-if="loading" class="loading-spinner-overlay">
       <img ref="logo" class="logoLoading" alt="Logo" src="../assets/logo.png" v-if="showLogo">
@@ -26,7 +24,7 @@
   </div>
 
 
-  
+
 
   <!-- Login Form -->
   <div v-show="view === 'login'" class="form-wrapper" id="loginAnch">
@@ -35,13 +33,19 @@
         <form>
           <h2 class="form-title">Login</h2>
           <div class="user-box">
-            <input type="text" id="username" v-model="username" class="form-input" />
+            <input type="text" id="username" v-model="username" :style="{ borderColor: usernameError ? 'red' : '' }"
+              class="form-input" />
             <label for="username">Username:</label>
           </div>
           <div class="user-box">
-            <input type="password" id="password" v-model="password" class="form-input" />
+            <input type="password" id="password" v-model="password" :style="{ borderColor: passwordError ? 'red' : '' }"
+              class="form-input" />
             <label for="password">Password:</label>
+
           </div>
+          <br />
+          <label v-if="wrongData" style="color: red;">Wrong username or password</label>
+          <label v-if="emptyDataError" style="color: red;">Please enter username and password </label>
           <button @click.prevent="login" :class="{ 'hover-effect': hover }" class="form-button">Login</button>
           <button @click.prevent="toggleView" :class="{ 'hover-effect': hover }" class="form-button">Register</button>
         </form>
@@ -50,50 +54,58 @@
   </div>
 
   <!-- Register Form -->
-  <div v-show="view === 'register'" class="form-wrapper">
-    <div class="wrapperRegister">
-      <div class="login-box">
-        <form>
-          <h2 class="form-title">Register</h2>
-          <div class="user-box">
-            
-            <input type="text" id="username" v-model="username" class="form-input" />
-            <label for="username">Username</label>
-          </div>
-          <div class="user-box">
-            
-            <input type="password" id="password" v-model="password" class="form-input" />
-            <label for="password">Password:</label>
-          </div>
-          <div class="user-box">
-           
-            <input type="password" id="passwordConfirm" v-model="passwordConfirm" class="form-input" />
-            <label for="passwordConfirm">Password Confirmation:</label>
-          </div>
-          <button @click.prevent="register" :class="{ 'hover-effect': hover }" class="form-button">Register</button>
-          <button @click.prevent="toggleView" :class="{ 'hover-effect': hover }" class="form-button">Login</button>
-        </form>
-      </div>
+<div v-show="view === 'register'" class="form-wrapper">
+  <div class="wrapperRegister">
+    <div class="login-box">
+      <form>
+        <h2 class="form-title">Register</h2>
+        <div class="user-box">
+          <input type="text" id="username" v-model="username" class="form-input" />
+          <label for="username">Username</label>
+        </div>
+        <div class="user-box">
+          <input type="password" id="password" v-model="password" @input="checkStrength" class="form-input" />
+          <label for="password">Password:</label>
+        </div>
+       
+        <div class="user-box">
+          <input type="password" id="passwordConfirm" v-model="passwordConfirm" class="form-input" />
+          <label for="passwordConfirm">Password Confirmation:</label>
+          <div id="color-bar" :style="{ background: meterColor, width: meterWidth }"></div>
+        </div>
+        <label v-if="usernameError || passwordError" style="color: red;">Username already exists</label>
+        <label v-if="emptyDataError" style="color: red;">Please enter username and password </label>
+        <label v-if="notMatchingPassword" style="color: red;">Passwords are not matching</label>
+        <button @click.prevent="register" :class="{ 'hover-effect': hover }" class="form-button">Register</button>
+        <button @click.prevent="toggleView" :class="{ 'hover-effect': hover }" class="form-button">Login</button>
+      </form>
+    </div>
     </div>
   </div>
 
 
- 
 </template>
 
 <script>
 import axios from 'axios';
-
 export default {
   data() {
     return {
-      loading:true,
-      view:'login',
+      loading: true,
+      meterColor: '#6B778D',
+      meterWidth: '10%',
+      meterText: 'Too short',
+      wrongData: false,
+      usernameError: false,
+      passwordError: false,
+      emptyDataError: false,
+      notMatchingPassword:false,
+      view: 'login',
       value1: false,
       particles: [],
       canvas: null,
       ctx: null,
-      particleCount: 300,
+      particleCount: 100,
       mouse: {
         x: 0,
         y: 0,
@@ -101,9 +113,10 @@ export default {
       showLogo: false,
       username: '',
       password: '',
+      passwordConfirm: '',
       hover: false,
       loginForm: false
-      
+
     };
   },
   mounted() {
@@ -197,48 +210,97 @@ export default {
     },
 
     register() {
-  if (this.password !== this.passwordConfirm) {
-    console.error('Password and password confirmation do not match');
-    return;
-  }
+      this.usernameError = false;
+      this.passwordError = false;
+      this.wrongData = false;
+      this.emptyDataError = false;
+      this.notMatchingPassword=false;
 
-  const apiUrl = 'http://localhost:8003/users/create';
+      if (this.password !== this.passwordConfirm) {
+        console.error('Password and password confirmation do not match');
+        this.notMatchingPassword=true;
+        return;
+      }
+
+      const apiUrl = 'http://localhost:8003/users/create';
 
 
-  const requestData = {
-    username: this.username,
-    password: this.password,
-    user_type: "admin"
-  };
+      const requestData = {
+        username: this.username,
+        password: this.password,
+        user_type: "admin"
+      };
 
-  axios.post(apiUrl, requestData)
-    .then(response => {
-    if(response.data.status_code === 400){
-      alert("Username already exists");
-    } else{
-      alert("Registration success")
-      this.view = this.view === 'login' ? 'register' : 'login';
-    }
-    })
-    .catch(error => {
-      console.error('Registration failed!', error);
-      alert("Username or password is wrong!");
+      alert(this.username.length);
 
-  
-    });
-},
+      if (this.username.length === 0 || this.password.length === 0) {
+        this.emptyDataError = true;
+      } else {
+        axios.post(apiUrl, requestData)
+          .then(response => {
+            if (response.data.status_code === 400) {
+              this.usernameError = true;
+              this.passwordError = true;
+            } else {
+              alert("Registration success")
+              this.view = this.view === 'login' ? 'register' : 'login';
+            }
+          })
+          .catch(error => {
+            console.error('Registration failed!', error);
+            this.usernameError = true;
+            this.passwordError = true;
+
+
+          });
+      }
+
+
+    },
 
     toggleView() {
       // Toggle between 'login' and 'register' views
       this.view = this.view === 'login' ? 'register' : 'login';
     },
 
+    checkStrength() {
+      let strength = 0;
 
+      if (this.password.length < 6) {
+        this.updateMeter('#6B778D', '10%', 'Too short');
+        return;
+      }
+
+      if (this.password.length > 7) strength += 1;
+      if (this.password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) strength += 1;
+      if (this.password.match(/([a-zA-Z])/) && this.password.match(/([0-9])/)) strength += 1;
+      if (this.password.match(/([!,%,&,@,#,$,^,*,?,_,~])/)) strength += 1;
+
+      if (strength < 2) {
+        this.updateMeter('#ff0000', '25%', 'Weak');
+      } else if (strength === 2) {
+        this.updateMeter('#00BCD4', '75%', 'Good');
+      } else {
+        this.updateMeter('#4CAF50', '100%', 'Strong');
+      }
+    },
+    updateMeter(color, width, text) {
+      this.meterColor = color;
+      this.meterWidth = width;
+      this.meterText = text;
+    },
+  
     login() {
+      this.usernameError = false;
+      this.passwordError = false;
+      this.wrongData = false;
+      this.emptyDataError = false;
+
       const username = this.username;
       const password = this.password;
       if (username.length === 0 && password.length === 0) {
-        alert('Please enter your username and password!')
+        this.emptyDataError = true;
+
       } else {
         const apiUrl = `http://localhost:8003/users/get_by/userpass?username=${this.username}&password=${this.password}`;
         axios.get(apiUrl)
@@ -246,7 +308,10 @@ export default {
             const userData = response.data;
             console.log(userData.status_code);
             if (userData.status_code === 404) {
-              alert('Invalid username or password');
+
+              this.wrongData = true;
+
+
             } else {
 
               localStorage.setItem('loggedInUserID', userData.id);
@@ -265,6 +330,28 @@ export default {
 </script>
 
 <style scoped>
+
+#color-bar {
+  height: 5px;
+  margin-top: 10px;
+  transition: width 0.5s ease, background-color 0.5s ease;
+}
+
+#meter {
+  width: 100%;
+  height: 10px;
+  background-color: #ccc;
+}
+
+#meter-bar {
+  height: 100%;
+}
+
+#meter-text {
+  margin-top: 5px;
+}
+
+
 html {
   scroll-snap-type: x mandatory;
   overflow-y: hidden;
@@ -280,19 +367,22 @@ html {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: black; /* Set the background color */
-  opacity: 1; /* Adjust the opacity if needed */
+  background-color: black;
+  /* Set the background color */
+  opacity: 1;
+  /* Adjust the opacity if needed */
   z-index: 1000;
 }
 
-.wrapperLogin, .wrapperRegister {
+.wrapperLogin,
+.wrapperRegister {
   height: 100vh;
   width: auto;
-  background: #0b0b0b;
   overflow: hidden;
 }
 
-.login-container, .register-container {
+.login-container,
+.register-container {
   position: relative;
   width: 100%;
   height: 100%;
@@ -310,9 +400,9 @@ html {
   transition: .5s;
 }
 
-.user-box input:focus ~ label,
-.user-box input:valid ~ label,
-.user-box input:not(:placeholder-shown) ~ label {
+.user-box input:focus~label,
+.user-box input:valid~label,
+.user-box input:not(:placeholder-shown)~label {
   top: -20px;
   left: 0;
   color: #03e9f4;
@@ -335,6 +425,7 @@ html {
   0% {
     transform: translateX(-100%) translateY(-100%);
   }
+
   100% {
     transform: translateX(100%) translateY(100%);
   }
@@ -345,7 +436,8 @@ html {
   z-index: 2;
 }
 
-.login-box, .register-box {
+.login-box,
+.register-box {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -358,9 +450,12 @@ html {
 }
 
 @keyframes borderAnimation {
-  0%, 100% {
+
+  0%,
+  100% {
     border-color: #03e9f4;
   }
+
   50% {
     border-color: transparent;
   }
@@ -372,14 +467,14 @@ html {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #0b0b0b;
+  background: #000000;
 }
 
 .login-box {
   position: relative;
   width: 400px;
   padding: 40px;
-  background: rgba(0, 72, 101, 0.588);
+  background: rgba(0, 72, 101, 0);
   box-sizing: border-box;
   border-radius: 10px;
   z-index: 100;
@@ -420,8 +515,8 @@ html {
   transition: .5s;
 }
 
-.user-box input:focus ~ label,
-.user-box input:valid ~ label {
+.user-box input:focus~label,
+.user-box input:valid~label {
   top: -20px;
   left: 0;
   color: #03e9f4;
@@ -470,7 +565,9 @@ html {
   0% {
     left: -100%;
   }
-  50%,100% {
+
+  50%,
+  100% {
     left: 100%;
   }
 }
@@ -489,7 +586,9 @@ html {
   0% {
     top: -100%;
   }
-  50%,100% {
+
+  50%,
+  100% {
     top: 100%;
   }
 }
@@ -508,7 +607,9 @@ html {
   0% {
     right: -100%;
   }
-  50%,100% {
+
+  50%,
+  100% {
     right: 100%;
   }
 }
@@ -527,7 +628,9 @@ html {
   0% {
     bottom: -100%;
   }
-  50%,100% {
+
+  50%,
+  100% {
     bottom: 100%;
   }
 }
@@ -552,10 +655,13 @@ html {
 }
 
 .logoLoading {
-  width: 400px; /* Adjust the width to your preference */
+  width: 400px;
+  /* Adjust the width to your preference */
   height: auto;
-  margin-bottom: 300px; /* Adjust the bottom margin as needed */
-  margin-top: 20px; /* Adjust the top margin as needed */
+  margin-bottom: 300px;
+  /* Adjust the bottom margin as needed */
+  margin-top: 20px;
+  /* Adjust the top margin as needed */
 }
 
 .loading-spinner-overlay {
@@ -566,7 +672,7 @@ html {
   /* Existing styles */
 }
 
-.register-container{
+.register-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -600,9 +706,10 @@ html {
 
 }
 
-.wrapper .form-box.login{
-  left:0;
+.wrapper .form-box.login {
+  left: 0;
   padding: 0 40px;
+
 }
 
 .form-box .form-group {
@@ -621,19 +728,20 @@ html {
   border-bottom: 2px solid #fff;
 
 }
+
 .form-group label {
   position: absolute;
-  top:50%;
-  left:0;
+  top: 50%;
+  left: 0;
   transform: translateY(-50%);
   font-size: 16px;
-  color:#fff;
+  color: #fff;
   pointer-events: none;
   transition: .5s;
 }
 
 
-.form-group input:focus{
+.form-group input:focus {
   color: #0ef;
 }
 
@@ -641,7 +749,7 @@ html {
 
 body {
   margin: 0;
-  background-color: black;
+  background: radial-gradient(closest-corner, #1d2020, #000000);
   overflow: hidden;
 
 }
@@ -660,7 +768,7 @@ body {
 
 .form-title {
   font-size: 28px;
-  color: #000000;
+  color: #70ced8;
   text-align: center;
 }
 
@@ -679,8 +787,10 @@ body {
 }
 
 .loading-spinner p {
-  margin-top: 10px; /* Adjust the margin as needed */
-  color: #03e9f4; /* Adjust the color as needed */
+  margin-top: 10px;
+  /* Adjust the margin as needed */
+  color: #03e9f4;
+  /* Adjust the color as needed */
 }
 
 
@@ -704,15 +814,15 @@ body {
 }
 
 .form-button {
-position: relative;
-width: 100%;
- height: 45px;
- background: transparent;
- border: 2px solid #0ef;
- outline: none;
- font-size: 16px;
- color: #fff;
- font-weight: 600;
+  position: relative;
+  width: 100%;
+  height: 45px;
+  background: transparent;
+  border: 2px solid #0ef;
+  outline: none;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
 }
 
 .form-button:hover {

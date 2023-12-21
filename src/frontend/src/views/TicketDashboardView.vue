@@ -5,101 +5,89 @@
 
         <nav role="navigation">
           <div id="menuToggle">
-            <!--
-            A fake / hidden checkbox is used as click reciever,
-            so you can use the :checked selector on it.
-            -->
             <input type="checkbox" />
-            
-            <!--
-            Some spans to act as a hamburger.
-            
-            They are acting like a real hamburger,
-            not that McDonalds stuff.
-            -->
             <span></span>
             <span></span>
             <span></span>
-            
-            <!--
-            Too bad the menu has to be inside of the button
-            but hey, it's pure CSS magic.
-            -->
             <ul id="menu">
-              <img src="../assets/userAvatar.png" alt="User Profile Image" class="profile-image" />
-              <p class="logged-in-user">{{ loggedInUser }}</p>
-              <a><li>Users</li></a>
-              <a @click="logout"><li>Logout</li></a>
+              <a>
+                <li ref="userButton" @click="openUserPopup">Users</li>
+              </a>
+              <a @click="logout">
+                <li>Logout</li>
+              </a>
             </ul>
           </div>
         </nav>
 
-        <div class="user-profile" @mouseover="showProfileDropdown = true" @mouseleave="showProfileDropdown = false">
-          <button ref="userButton" @click="openUserPopup">Users</button>
+        <!-- User Profile -->
+        <div class="profile-container">
           <img src="../assets/userAvatar.png" alt="User Profile Image" class="profile-image" />
-          <p class="logged-in-user">User: <span>{{ loggedInUser }}</span></p>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-          <!-- Search Bar Section -->
-          <div class="search-bar">
-            <input type="text" v-model="searchQuery" placeholder="Search..." @input="filterTable">
-            <div class="search"></div>
+          <div class="user-info">
+            <p class="logged-in-user">User: <span id="usernamePlaceholder">{{ loggedInUser }}</span></p>
+            <p class="logged-in-user-type">User type: <span id="userTypePlaceholder">{{ loggedInUserType }}</span></p>
           </div>
         </div>
 
-        
-
-        <!-- User Profile Dropdown -->
-        <div v-if="showProfileDropdown" class="profile-dropdown">
-          <!-- Add more user-related options as needed -->
-          <button @click="logout" class="logout-btn">Logout</button>
+        <!-- Search Bar Section -->
+        <div class="search-bar">
+          <input type="text" v-model="searchQuery" placeholder="Search... Description" @input="filterTable">
+          <div class="search"></div>
         </div>
       </div>
-    
-    <button id="wide-button" @click="openPopup" :class="{ 'hover-effect': hover }">+</button>
 
-    <div id="table-container" class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Description</th>
-            <th>Date Created</th>
-            <th>Date Closed</th>
-            <th>Created By</th>
-            <th>Closed By</th>
-            <th>User ID</th>
-            <th>Done</th>
-            <th>Close</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="ticket in filteredTickets" :key="ticket.id">
-            <td>{{ ticket.id }}</td>
-            <td>{{ ticket.description }}</td>
-            <td>{{ formatDate(ticket.date_created) }}</td>
-            <td>{{ formatDate(ticket.date_closed) }}</td>
-            <td><span>{{ loggedInUser }}</span></td>
-            <td>{{ ticket.closed_by || '-' }}</td>
-            <td>{{ ticket.user_id }}</td>
-            <td>{{ ticket.done ? 'Yes' : 'No' }}</td>
-            <td><button @click="closeTicket(ticket)" :disabled="ticket.done" class="btn btn-sm btn-primary">Close</button>
-            </td>
-            <td>
-              <button @click="editTicket(ticket)" class="btn btn-sm btn-primary">Edit</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <button id="wide-button" @click="openPopup" :class="{ 'hover-effect': hover }">+</button>
+
+      <div class="table-container">
+        <div class="tbl-header">
+          <table cellpadding="0" cellspacing="0" border="0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Date Created</th>
+                <th>Date Closed</th>
+                <th>Created By</th>
+                <th>Closed By</th>
+                <th>User ID</th>
+                <th>Done</th>
+                <th>Close</th>
+                <th></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="tbl-content">
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+              <tr v-for="ticket in filteredTickets" :key="ticket.id">
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.description }}</td>
+                <td>{{ formatDate(ticket.date_created) }}</td>
+                <td>{{ formatDate(ticket.date_closed) }}</td>
+                <td><span>{{ loggedInUser }}</span></td>
+                <td>{{ ticket.closed_by || '-' }}</td>
+                <td>{{ ticket.user_id }}</td>
+                <td>{{ ticket.done ? 'Yes' : 'No' }}</td>
+                <td><button @click="closeTicket(ticket)" :disabled="ticket.done"
+                    class="btn btn-sm btn-primary">Close</button>
+                </td>
+                <td>
+                  <button @click="editTicket(ticket)" class="btn btn-sm btn-primary">Edit</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
     <!-- Pop-up form -->
     <div v-if="isPopupVisible" class="popup">
       <form @submit.prevent="createTicket">
         <div class="form-group">
           <label for="description">Description</label>
-          <textarea class="form-control" id="description" v-model="newTicket.description" required></textarea>
+          <textarea class="form-control" id="description" v-model="newTicket.description" 
+            oninvalid="this.setCustomValidity('Please fill out this field.')" required></textarea>
         </div>
         <div class="button-group">
           <button type="submit" class="btn btn-success">Create Ticket</button>
@@ -114,41 +102,39 @@
       <form>
         <div class="form-group">
           <div id="table-container">
-            <table class="tablePopup">
-              <thead>
-                <tr class="tablePopupTr">
-                  <th>User ID</th>
-                  <th>User Name</th>
-                  <th>User Type</th>
-                  <th>New Role</th>
-                  <th>Edit</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="user in usersData" class="tablePopupTr" :key="user.id">
-                  <td>{{ user.id }}</td>
-                  <td>{{ user.username }}</td>
-                  <td>{{ user.user_type }}</td>
-                  <td v-if="selectedUser" @change="updateUser(user)">
-                    <select v-model="user.updatedUserType">
-                      <option value="admin">Admin</option>
-                      <option value="developer">Developer</option>
-                      <option value="customer">Customer</option>
-                    </select>
-                  </td>
-
-                  <td>
-                    <button @click="updateUser(user)" class="btn btn-sm btn-primary">User</button>
-                  </td>
-                </tr>
-
-
-              </tbody>
-            </table>
+            <div class="tbl-header">
+              <table cellpadding="0" cellspacing="0" border="0">
+                <thead>
+                  <tr class="tablePopupTr">
+                    <th>User ID</th>
+                    <th>User Name</th>
+                    <th>User Type</th>
+                    <th>New Role</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div class="tbl-content">
+              <table ellpadding="0" cellspacing="0" border="0">
+                <tbody>
+                  <tr v-for="user in usersData" class="tablePopupTr" :key="user.id">
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.user_type }}</td>
+                    <td v-if="selectedUser" @change="updateUser(user)">
+                      <select v-model="user.updatedUserType">
+                        <option value="admin">Admin</option>
+                        <option value="developer">Developer</option>
+                        <option value="customer">Customer</option>
+                      </select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
         <div class="button-group">
-          <button @click="updateUser" class="btn btn-success">Create Ticket</button>
           <button @click="closeUserPopup" type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
           </button>
         </div>
@@ -158,15 +144,19 @@
 
     <!-- Edit Ticket Popup -->
     <div v-if="selectedTicket" class="popup">
-      <form>
+      <form @submit.prevent="updateTicket(ticket)">
         <div class="form-group">
           <label for="description">Description</label>
-          <textarea class="form-control" v-model="selectedTicket.description" required></textarea>
+          <textarea class="form-control" id="description" v-model="selectedTicket.description" required
+            title="Please fill out this field."
+            oninvalid="this.setCustomValidity('Please fill out this field.')"></textarea>
         </div>
 
         <div class="button-group">
-          <button @click.prevent="updateTicket(ticket)" class="btn btn-sm btn-primary">Update Ticket</button>
-          <button @click.prevent="closePopup" class="btn btn-sm btn-secondary">Cancel</button>
+          <button @click.prevent="closePopup" type="button" class="btn-close" data-dismiss="modal"
+            aria-label="Close"></button>
+          <button type="submit" class="btn btn-sm btn-primary">Update Ticket</button>
+          <br>
           <button @click.prevent="deleteTicket" class="btn btn-sm btn-danger">Delete Ticket</button>
         </div>
       </form>
@@ -207,6 +197,7 @@ export default {
       selectedTicket: null,
       selectedUser: null,
       loggedInUser: '',
+      loggedInUserType: '',
       searchQuery: '',
       filteredTickets: [],
       showProfileDropdown: false,
@@ -218,6 +209,7 @@ export default {
     logout() {
       localStorage.removeItem('loggedInUser');
       localStorage.removeItem('loggedInUserID');
+      localStorage.removeItem('loggedInUserType');
       this.$router.push('/');
     },
     createTicket() {
@@ -395,12 +387,16 @@ export default {
   mounted() {
     const newUserID = localStorage.getItem('loggedInUserID');
     this.loggedInUser = localStorage.getItem('loggedInUser');
+    this.loggedInUserType = localStorage.getItem('loggedInUserType')
+
+    if (this.loggedInUserType === "developer") {
+      this.loggedInUserType == "Developer"
+    } else {
+      this.loggedInUserType = localStorage.getItem('loggedInUserType')
+    }
     const userType = localStorage.getItem('loggedInUserType');
     this.loading = true;
     if (userType === "admin") {
-
-
-
       axios.get(`http://localhost:8003/tickets/get_all`)
         .then(response => {
           this.tickets = response.data;
@@ -414,9 +410,10 @@ export default {
           this.loading = false;
         });
 
-    } else if(userType === "developer"){
+    } else if (userType === "developer") {
 
       const userButton = this.$refs.userButton
+
       userButton.style.display = 'none'
       axios.get(`http://localhost:8003/tickets/get_all`)
         .then(response => {
@@ -458,13 +455,18 @@ export default {
 </script>
 
 <style scoped>
-* {
+body {
   margin: 0;
   padding: 0;
 }
 
+
 .fullSize {
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: -1;
   background: radial-gradient(closest-corner, #1d2020, #000000);
 
@@ -492,253 +494,152 @@ export default {
 }
 
 #wide-button {
-  width: 90%;
-  max-width: 800px;
-  padding: 5px;
-  background-color: #03e9f4;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  margin-top: 100px;
-  margin-bottom: 1em;
-  transition: background-color 0.3s;
   position: relative;
+  display: inline-block;
+  width: 65em;
+  padding: 10px 20px;
+  color: #69d2dd;
+  font-size: 16px;
+  text-decoration: none;
+  text-transform: uppercase;
   overflow: hidden;
+  transition: background 0.5s, color 0.5s, box-shadow 0.5s;
+  margin-top: 60px;
+  margin-bottom: 30px;
+  letter-spacing: 4px;
+  border: 2px solid #69d2dd;
+  background: transparent;
+  border-radius: 5px;
 }
-
-#wide-button:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #fff;
-  opacity: 0.5;
-  transform: translate(-50%, -50%) rotate(45deg);
-  transition: opacity 0.3s;
-}
-
-#wide-button:hover:before {
-  opacity: 0;
-}
-
-
 
 #wide-button:hover {
-  background: #03e9f4;
+  background: #69d2dd;
   color: #fff;
-  box-shadow: 0 0 10px rgba(3, 233, 244, 0.8), 0 0 20px rgba(3, 233, 244, 0.6),
+  box-shadow: 0 0 10px #69d2dd, 0 0 20px rgba(3, 233, 244, 0.6),
     0 0 30px rgba(3, 233, 244, 0.4), 0 0 40px rgba(3, 233, 244, 0.2);
 }
 
-.profile-dropdown {
+#wide-button span {
   position: absolute;
-  top: 70px;
-  right: 0;
-  margin-left: 10%;
-  background-color: #292b2c;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  z-index: 1000;
+  display: block;
 }
 
-.profile-dropdown button {
+#wide-button span:nth-child(1) {
+  top: 0;
+  left: -100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #69d2dd);
+  animation: wide-button 1s linear infinite;
+}
+
+@keyframes wide-button {
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
+}
+
+nav {
+  margin-top: 15px;
   padding: 10px;
-  width: 100%;
-  text-align: left;
-  border: none;
-  background-color: transparent;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.profile-dropdown button:hover {
-  background-color: #333;
-}
-
-
-#menuToggle
-{
+#menuToggle {
   display: block;
   position: relative;
-  top: 20px;
-  left: 30px;
-  
-  z-index: 1;
-  
-  -webkit-user-select: none;
   user-select: none;
+  cursor: pointer;
 }
 
-#menuToggle a
-{
-  text-decoration: none;
-  color: #fff;
-  
-  transition: color 0.3s ease;
-}
-
-#menuToggle a:hover
-{
-  color: #03e9f4;
-}
-
-
-#menuToggle input
-{
+#menuToggle input {
   display: block;
   width: 40px;
   height: 32px;
   position: absolute;
   top: -7px;
   left: -5px;
-  
   cursor: pointer;
-  
-  opacity: 0; /* hide this */
-  z-index: 2; /* and place it over the hamburger */
-  
-  -webkit-touch-callout: none;
+  text-align: left;
+  opacity: 0;
+  /* hide the checkbox */
+  z-index: 2;
+  /* ensure the checkbox is above the span elements */
 }
 
-/*
- * Just a quick hamburger
- */
-#menuToggle span
-{
+#menuToggle span {
   display: block;
-  width: 33px;
-  height: 4px;
+  width: 30px;
+  height: 3px;
   margin-bottom: 5px;
   position: relative;
-  
-  background: #cdcdcd;
+  background: #69d2dd;
   border-radius: 3px;
-  
   z-index: 1;
-  
-  transform-origin: 4px 0px;
-  
-  transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-              background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-              opacity 0.55s ease;
+  transform-origin: 4px 0;
+  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), background 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
+    opacity 0.55s ease;
 }
 
-#menuToggle span:first-child
-{
+#menuToggle span:first-child {
   transform-origin: 0% 0%;
 }
 
-#menuToggle span:nth-last-child(2)
-{
+#menuToggle span:nth-last-child(2) {
   transform-origin: 0% 100%;
 }
 
-/* 
- * Transform all the slices of hamburger
- * into a crossmark.
- */
-#menuToggle input:checked ~ span
-{
+#menuToggle input:checked~span {
   opacity: 1;
-  transform: rotate(45deg) translate(-2px, -1px);
-  background: #03e9f4;
+  transform: rotate(-45deg) translate(-5px, -6px);
+  background: #69d2dd;
 }
 
-/*
- * But let's hide the middle one.
- */
-#menuToggle input:checked ~ span:nth-last-child(3)
-{
+#menuToggle input:checked~span:nth-last-child(3) {
   opacity: 0;
   transform: rotate(0deg) scale(0.2, 0.2);
 }
 
-/*
- * Ohyeah and the last one should go the other direction
- */
-#menuToggle input:checked ~ span:nth-last-child(2)
-{
-  transform: rotate(-45deg) translate(0, -1px);
+#menuToggle input:checked~span:nth-last-child(2) {
+  transform: rotate(45deg) translate(-5px, 6px);
 }
 
-/*
- * Make this absolute positioned
- * at the top left of the screen
- */
-#menu
-{
+#menu {
   position: absolute;
-  width: 300px;
-  margin: -100px 0 0 -60px;
-  padding: 50px;
-  padding-top: 60px;
-  
-  background: #1d2020,;
-  list-style-type: none;
-  -webkit-font-smoothing: antialiased;
-  /* to stop flickering of text in safari */
-  
-  transform-origin: 0% 0%;
-  transform: translate(-100%, 0);
-  
-  transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
-}
-
-#menu li
-{
-  padding: 10px 0;
-  font-size: 22px;
-}
-
-/*
- * And let's slide it in from the left
- */
-#menuToggle input:checked ~ ul
-{
-  transform: none;
-}
-
-.user-profile {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  align-items: center;
-  background-color: #292b2c;
-  padding: 10px;
+  width: 200px;
+  margin-top: -33.5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  list-style-type: none;
+  padding: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
-.profile-image {
-  width: 40px;
-  height: 40px;
-  right: 10px;
-  border-radius: 50%;
-  margin-right: 10px;
+#menuToggle input:checked~ul {
+  opacity: 1;
+  visibility: visible;
 }
 
-.logged-in-user {
-  font-size: 16px;
-  color: #555;
-  margin: 0;
+#menu a {
+  text-decoration: none;
+  color: #69d2dd;
+  text-align: left;
 }
 
-.logged-in-user span {
-  color: #03e9f4;
-  font-weight: bold;
+#menu li {
+  padding: 15px;
+  text-align: center;
 }
 
 .search-bar {
   position: absolute;
   margin: auto;
-  margin-right: 15em;
+  margin-right: -1.7em;
+  margin-top: 1em;
   top: 0;
   left: 0;
   right: 0;
@@ -756,7 +657,7 @@ export default {
   left: 0;
   width: 50px;
   height: 50px;
-  background:#03e9f4;
+  background: #69d2dd;
   transition: all 1s;
   z-index: 4;
   box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.4);
@@ -808,11 +709,11 @@ export default {
   height: 35px;
   outline: none;
   border: none;
-  background:#03e9f4;
+  background: #69d2dd;
   color: white;
-  text-shadow: 0 0 10px#03e9f4;
+  text-shadow: 0 0 10px #69d2dd;
   padding: 0 80px 0 20px;
-  box-shadow: 0 0 25px 0 #03e9f4, 0 20px 25px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 25px 0 #69d2dd, 0 20px 25px 0 rgba(0, 0, 0, 0.2);
   transition: all 1s;
   opacity: 0;
   z-index: 5;
@@ -826,7 +727,7 @@ export default {
 
 .search-bar input:focus {
   width: 250px;
-  right:250px;
+  right: 250px;
   opacity: 1;
   cursor: text;
 }
@@ -877,25 +778,13 @@ export default {
   animation: fadeIn 0.3s ease-in-out forwards;
 }
 
-.table-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-}
-
-table {
-  width: 80%;
-  /* Adjust this to control the width of the table */
-}
-
 .popupUser {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 20px;
-  background-color: #fff;
+  background: radial-gradient(closest-corner, #1d2020, #000000);
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -905,12 +794,20 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  border: 2px solid transparent;
+  overflow: hidden;
+  z-index: 3;
+  animation: borderAnimation 10s infinite alternate;
 }
 
 .tablePopupTr {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
+  border: 2px solid transparent;
+  overflow: hidden;
+  z-index: 3;
+  animation: borderAnimation 10s infinite alternate;
 }
 
 .popup form {
@@ -964,57 +861,57 @@ table {
 .btn-primary {
   width: 100%;
   padding: 15px;
-  background-color: #68d2df;
+  background-color: #69d2dd;
   color: white;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-@media (max-width: 768px) {
-  .ticket-dashboard {
-    padding: 10px;
-  }
-
-  .add-ticket-btn {
-    top: 1px;
-    right: 10px;
-    font-size: 14px;
-    padding: 5px;
-  }
-
-  .table {
-    margin-top: 10px;
-    margin-top: 10px;
-    width: 100%;
-    border-collapse: collapse;
-
-  }
-
-  th,
-  td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-
-  #table-container {
-    margin: 20px;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .user-profile {
-    top: 10px;
-    right: 10px;
-  }
-
-  .search-bar input {
-    width: 100%;
-    max-width: 300px;
-  }
+.profile-container {
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  margin: 20px;
+  margin-right: 1em;
+  padding: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  overflow: hidden;
+  z-index: 3;
+  background-color: rgba(0, 0, 0, 0.2);
+  animation: borderAnimation 10s infinite alternate;
+  position: fixed;
+  top: 10px;
+  right: 10px;
 }
+
+.profile-image {
+  max-width: 40px;
+  margin-right: 20px;
+}
+
+.user-info {
+  text-align: left;
+}
+
+.logged-in-user {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+.logged-in-user-type {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+.search-bar input {
+  width: 100%;
+  max-width: 300px;
+}
+
 
 .btn-secondary {
   background-color: #7f8c8d;
@@ -1022,7 +919,7 @@ table {
 }
 
 .btn-success {
-  background-color: #68d2df;
+  background-color: #69d2dd;
   color: #ecf0f1;
 }
 
@@ -1040,26 +937,6 @@ table {
   /* Adjust the scale factor as needed */
 }
 
-
-
-th,
-td {
-  border: 1px solid #333;
-  padding: 15px;
-  text-align: left;
-  background-color: #292b2c;
-  color: white;
-}
-
-th {
-  position: sticky;
-  top: 0;
-  background-color: #292b2c;
-  color: white;
-  z-index: 1;
-
-}
-
 .loading-spinner {
   display: flex;
   justify-content: center;
@@ -1074,8 +951,8 @@ th {
 }
 
 .spinner {
-  border: 6px solid rgba(255, 255, 255, 0.3);
-  border-top: 6px solid #03e9f4;
+  border: 6px solid #528388;
+  border-top: 6px solid #69d2dd;
   /* Change the color as needed */
   border-radius: 50%;
   width: 50px;
@@ -1116,7 +993,7 @@ th {
   right: 20px;
   width: 100px;
   padding: 5px;
-  background-color: #03e9f4;
+  background-color: #69d2dd;
   color: white;
   border: none;
   border-radius: 5px;
@@ -1124,33 +1001,89 @@ th {
   transition: background-color 0.3s, transform 0.3s;
 }
 
-@media screen and (max-width: 600px) {
-  table {
-    width: 100%;
-  }
-
-  th,
-  td {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-  }
-}
-
-body {
-  margin: 0;
-  background-color: black;
-  overflow: hidden;
-}
-
-.background {
-  position: fixed;
-  top: 0;
-  left: 0;
+table {
   width: 100%;
-  height: 100%;
-  background: radial-gradient(closest-corner, #1d2020, #000000);
-  z-index: -1;
+  table-layout: fixed;
+}
+
+@keyframes borderAnimation {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(3, 233, 244, 0.8);
+  }
+
+  50% {
+    box-shadow: 0 0 10px rgba(3, 233, 244, 1);
+  }
+}
+
+.tbl-header {
+  max-width: 1038px;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  border: 2px solid transparent;
+  overflow: hidden;
+  z-index: 3;
+  background-color: #528388;
+  animation: borderAnimation 10s infinite alternate;
+}
+
+.tbl-content {
+  height: 400px;
+  overflow-x: auto;
+  margin-top: 0px;
+  max-width: 1038px;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  border: 2px solid transparent;
+  animation: borderAnimation 10s infinite alternate;
+}
+
+th {
+  padding: 20px 15px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 12px;
+  color: #fff;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+}
+
+
+td {
+  padding: 15px;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 300;
+  font-size: 12px;
+  color: #fff;
+  border-bottom: solid 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Animated hover effect */
+tr {
+  transition: background-color 0.3s ease;
+}
+
+tr:hover {
+  background-color: #5283882e;
+  /* Lighter neon light turquoise on hover */
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 </style>
  
