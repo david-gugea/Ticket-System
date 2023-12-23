@@ -77,6 +77,7 @@
           <label v-if="emptyDataError" style="color: red;">Please enter username and password </label>
           <label v-if="notMatchingPassword" style="color: red;">Passwords are not matching</label>
           <button @click.prevent="register" :class="{ 'hover-effect': hover }" class="form-button">Register</button>
+          <label v-if="registrationSuccess" style="color: rgb(13, 255, 0);">Registration success</label>
           <button @click.prevent="toggleView" :class="{ 'hover-effect': hover }" class="form-button">Login</button>
         </form>
       </div>
@@ -99,6 +100,7 @@ export default {
       passwordError: false,
       emptyDataError: false,
       notMatchingPassword: false,
+      registrationSuccess: false,
       view: 'login',
       value1: false,
       particles: [],
@@ -216,6 +218,7 @@ export default {
       this.wrongData = false;
       this.emptyDataError = false;
       this.notMatchingPassword = false;
+      this.registrationSuccess = false;
 
       if (this.password !== this.passwordConfirm) {
         console.error('Password and password confirmation do not match');
@@ -232,8 +235,6 @@ export default {
         user_type: "admin"
       };
 
-      alert(this.username.length);
-
       if (this.username.length === 0 || this.password.length === 0) {
         this.emptyDataError = true;
       } else {
@@ -243,9 +244,9 @@ export default {
               this.usernameError = true;
               this.passwordError = true;
             } else {
-              alert("Registration success")
               this.view = this.view === 'login' ? 'register' : 'login';
             }
+            this.registrationSuccess = true;
           })
           .catch(error => {
             console.error('Registration failed!', error);
