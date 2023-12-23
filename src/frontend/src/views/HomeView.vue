@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Loading Spinner Overlay -->
     <div v-if="loading" class="loading-spinner-overlay">
       <img ref="logo" class="logoLoading" alt="Logo" src="../assets/logo.png" v-if="showLogo">
       <div class="loading-spinner" role="status">
@@ -8,7 +9,10 @@
       </div>
     </div>
 
+    <!-- Particle Canvas -->
     <canvas ref="canvas" class="particle-canvas" @mousemove="handleMouseMove"></canvas>
+
+    <!-- Logo Container -->
     <div class="logo-container">
       <transition name="fade">
         <img ref="logo" class="logo" alt="Logo" src="../assets/logo.png" v-if="showLogo">
@@ -17,12 +21,11 @@
     </div>
   </div>
 
+
+  <!-- Login Box (Hidden by default) -->
   <div class="loginBox">
     <div class="loginform"></div>
   </div>
-
-
-
 
   <!-- Login Form -->
   <div v-show="view === 'login'" class="form-wrapper" id="loginAnch">
@@ -39,7 +42,6 @@
             <input type="password" id="password" v-model="password" :style="{ borderColor: passwordError ? 'red' : '' }"
               class="form-input" />
             <label for="password">Password:</label>
-
           </div>
           <br />
           <label v-if="wrongData" style="color: red;">Wrong username or password</label>
@@ -87,6 +89,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      // Data properties...
       loading: true,
       meterColor: '#6B778D',
       meterWidth: '10%',
@@ -115,13 +118,14 @@ export default {
 
     };
   },
+  // Initialization and animation setup...
   mounted() {
     this.initializeCanvas();
     this.createParticles();
     setTimeout(() => {
       this.showLogo = true;
       this.animate();
-      this.loading = false; // Set loading to false after content is loaded
+      this.loading = false;
     }, 3000);
 
     setTimeout(() => {
@@ -130,6 +134,7 @@ export default {
     }, 1000);
   },
   methods: {
+    // Methods...
     initializeCanvas() {
       this.canvas = this.$refs.canvas;
       this.ctx = this.canvas.getContext('2d');
@@ -246,14 +251,9 @@ export default {
             console.error('Registration failed!', error);
             this.usernameError = true;
             this.passwordError = true;
-
-
           });
       }
-
-
     },
-
     toggleView() {
       // Toggle between 'login' and 'register' views
       this.view = this.view === 'login' ? 'register' : 'login';
@@ -306,10 +306,7 @@ export default {
             if (userData.status_code === 404) {
 
               this.wrongData = true;
-
-
             } else {
-
               localStorage.setItem('loggedInUserID', userData.id);
               localStorage.setItem('loggedInUser', userData.username);
               localStorage.setItem('loggedInUserType', userData.user_type);
@@ -320,13 +317,13 @@ export default {
     },
   },
   beforeUnmount() {
+    // Cleanup...
     window.removeEventListener('resize', this.resizeCanvas);
   },
 };
 </script>
 
 <style scoped>
-
 #color-bar {
   height: 5px;
   margin-top: 5px;
@@ -646,66 +643,57 @@ html {
   text-align: center;
 
 }
+
 #logo {
-position: absolute;
-top: 0;
-left: 0;
-width: 250px;
-height: 100px;
-overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100px;
+  overflow: hidden;
 }
+
 #logo img {
-width: 100%;
+  width: 100%;
 }
+
 #logo:before {
-content: '';
-position: absolute;
-top: 0;
-left: -100px;
-width: 70px;
-height: 100%;
-background: rgba(255,255,255, 0.3);
-transform: skewX(-30deg);
-animation-name: slide;
-animation-duration: 7s;
-animation-timing-function: ease-in-out;
-animation-delay: .3s;
-animation-iteration-count: infinite;
-animation-direction: alternate;
-background: linear-gradient(
-    to right, 
-    rgba(255, 255, 255, 0.13) 0%,
-    rgba(255, 255, 255, 0.13) 77%,
-    rgba(255, 255, 255, 0.5) 92%,
-    rgba(255, 255, 255, 0.0) 100%
-  );
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100px;
+  width: 70px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: skewX(-30deg);
+  animation-name: slide;
+  animation-duration: 7s;
+  animation-timing-function: ease-in-out;
+  animation-delay: .3s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  background: linear-gradient(to right,
+      rgba(255, 255, 255, 0.13) 0%,
+      rgba(255, 255, 255, 0.13) 77%,
+      rgba(255, 255, 255, 0.5) 92%,
+      rgba(255, 255, 255, 0.0) 100%);
 }
+
 @keyframes slide {
   0% {
     left: -100;
     top: 0;
   }
+
   50% {
     left: 120px;
     top: 0px;
   }
+
   100% {
     left: 290px;
     top: 0;
   }
-}
-.login-shadow {
-  width: 400px;
-  height: 400px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 100%;
-  z-index: 1;
-  box-shadow: 10px -55px 30px 15px #823ca6, 24px -10px 47px 10px #aab3d2, -21px -25px 97px 10px #5acee3, 51px 5px 17px 10px #1b7d8f, 3px 2px 77px 10px #f30bf5;
-  animation: shadow-rotate 1.5s linear infinite;
-  transform-origin: center;
 }
 
 @keyframes circle-size {
@@ -754,99 +742,12 @@ background: linear-gradient(
   /* Existing styles */
 }
 
-.register-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-
-
-.wrapper {
-  position: relative;
-  color: white;
-  width: 750px;
-  height: 450px;
-}
-
-.wrapper .form-box {
-  position: absolute;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-}
-
-.wrapper .form-box.login {
-  left: 0;
-  padding: 0 40px;
-
-}
-
-.form-box .form-group {
-  position: relative;
-  width: 100%;
-  height: 50px;
-  margin: 25px 0;
-}
-
-.form-group input {
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  border-bottom: 2px solid #fff;
-
-}
-
-.form-group label {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #fff;
-  pointer-events: none;
-  transition: .5s;
-}
-
-
-.form-group input:focus {
-  color: #0ef;
-}
-
-
-
 body {
   margin: 0;
   background: radial-gradient(closest-corner, #1d2020, #000000);
   overflow: hidden;
 
 }
-
-.background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: auto;
-  height: 100vh;
-  background: radial-gradient(closest-corner, #1d2020, #000000);
-  z-index: -1;
-}
-
-
 
 .form-title {
   font-size: 28px;
@@ -876,14 +777,6 @@ body {
   /* Adjust the color as needed */
 }
 
-
-.form-label {
-  display: block;
-  font-size: 16px;
-  margin-bottom: 8px;
-  color: #ddd;
-}
-
 .form-input {
   width: 100%;
   padding: 12px;
@@ -905,7 +798,7 @@ body {
   outline: none;
   font-size: 16px;
   color: #fff;
-  font-weight: 	Copperplate;
+  font-weight: Copperplate;
 }
 
 .form-button:hover {

@@ -1,15 +1,18 @@
 <template>
   <section id="main">
+    <!-- Main container -->
     <div class="fullSize">
+      <!-- Top container with navigation -->
       <div id="top-container">
         <nav>
+          <!-- Logo -->
           <div class="logo">
             <img ref="logo" class="logo" alt="Logo" src="../assets/logo_title.png">
           </div>
-          <!--Navigation-->
+          <!-- Navigation menu -->
           <ul class="menu">
+            <!-- User profile dropdown -->
             <li>
-              <!-- Animated Dropdown User Profile -->
               <div class="dropdown">
                 <button class="dropbtn" @click="openUserPopup">
                   <div class="profile-container">
@@ -21,7 +24,8 @@
                     </div>
                   </div>
                 </button>
-                <div class="dropdown-content">
+                <!-- Dropdown content -->
+                <div class="dropdown-content animated-btn">
                   <a ref="userButton" @click="openUserPopup">Users</a>
                   <a @click="logout">Logout</a>
                 </div>
@@ -30,9 +34,9 @@
           </ul>
         </nav>
       </div>
-      <!-- Search Bar Section -->
+      <!-- Search Bar -->
       <div class="search-bar">
-        <input type="text" v-model="searchQuery" placeholder="Search... Description" @input="filterTable">
+        <input type="text" v-model="searchQuery" placeholder="Description..." @input="filterTable">
         <div class="search"></div>
       </div>
 
@@ -93,7 +97,7 @@
             oninvalid="this.setCustomValidity('Please fill out this field.')" required></textarea>
         </div>
         <div class="button-group">
-          <button type="submit" class="btn btn-success">Create Ticket</button>
+          <button type="submit" class="createTicketBtn animated-btn">Create Ticket</button>
           <button @click.prevent="closePopup" type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
           </button>
         </div>
@@ -123,7 +127,7 @@
                     <td>{{ user.username }}</td>
                     <td>{{ user.user_type }}</td>
                     <td v-if="selectedUser" @change="updateUser(user)">
-                      <select v-model="user.updatedUserType">
+                      <select v-model="user.updatedUserType" class="dark-background-select">
                         <option value="admin">Admin</option>
                         <option value="developer">Developer</option>
                         <option value="customer">Customer</option>
@@ -301,7 +305,6 @@ export default {
           this.loading = false;
         });
     },
-
     closeTicket(ticket) {
       const userID = localStorage.getItem("loggedInUserID");
 
@@ -472,14 +475,12 @@ body {
   margin: 0px;
   padding: 0px;
   font-family: "Asap", sans-serif;
-  background: #222;
 }
 
 * {
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
-
 .fullSize {
   position: fixed;
   top: 0;
@@ -488,9 +489,7 @@ body {
   height: 100%;
   z-index: -1;
   background: radial-gradient(closest-corner, #1d2020, #000000);
-
 }
-
 .btnTableBox {
   padding-top: 3em;
 }
@@ -512,9 +511,8 @@ a {
 
 /*Navigation*/
 nav {
-  padding-bottom: 6.2em;
+  padding-bottom: 9em;
   padding-right: 17em;
-  top: 0;
   left: 0;
   display: inline-flex;
   justify-content: space-around;
@@ -531,14 +529,25 @@ nav {
 }
 
 .logo {
+  position: fixed;
+  display: flex;
   height: 50px;
   width: auto;
   display: flex;
-  padding-right: 29em;
-  margin-top: 2.4em;
+  padding-right: 82em;
+  margin-top: 4.25em;
 
 }
+.dark-background-select {
+  background-color: #333; 
+  color: white; 
+  border: solid #528388;
+  box-shadow: 0 0 10px #69d2dd; 
 
+  &:hover {
+    background-color: #555; /* Replace with the hover background color */
+  }
+}
 .dropdown {
   position: relative;
   display: inline-block;
@@ -557,14 +566,23 @@ nav {
 .dropdown-content {
   display: none;
   position: absolute;
-  margin-top: 6.25em;
-  margin-left: 3em;
+  margin-top: 9.1em;
+  margin-left: 43em;
+  border: 1px solid ;
   background-color: #528388;
   min-width: 200px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  box-shadow: 0 0 10px #69d2dd; 
   z-index: 1;
 }
 
+.animated {
+  transition: transform 0.3s ease-in-out;
+}
+
+.animated:hover {
+  transform: scale(1.1);
+}
 .dropdown-content a {
   color: #ffffff;
   padding: 12px 16px;
@@ -581,11 +599,13 @@ nav {
 }
 
 .profile-container {
+  position: fixed;
   display: flex;
   align-items: center;
   max-width: 600px;
   margin: 20px;
   margin-right: 1em;
+  margin-top: 0.3em;
   padding: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -593,16 +613,13 @@ nav {
   background-color: rgba(0, 0, 0, 0.2);
   position: fixed;
   top: 10px;
-  /* Adjust top positioning as needed */
   right: 10px;
-  /* Adjust right positioning as needed */
 }
 
 .profile-image {
   max-width: 40px;
   margin-right: 20px;
   margin-bottom: 1em;
-  /* Adjust this value as needed */
 }
 
 .user-info {
@@ -610,32 +627,19 @@ nav {
   margin-bottom: 1em;
   display: flex;
   flex-direction: column;
-  /* Align content in a column */
 }
 
 .logged-in-user,
 .logged-in-user-type {
   font-size: 14px;
-  /* Adjust font size as needed */
   font-weight: bold;
   color: #fff;
-  /* Adjust text color as needed */
   margin: 0;
-  /* Reset margin for better alignment */
 }
-
-
-
 
 #left-placeholder,
 #center-placeholder,
 #right-placeholder {
-  width: 50px;
-  height: 20px;
-  background-color: #ccc;
-}
-
-.top {
   width: 50px;
   height: 20px;
   background-color: #ccc;
@@ -696,10 +700,10 @@ nav {
 
 .search-bar {
   position: absolute;
+  display: flex;
   margin: auto;
   margin-left: 60.5em;
-  margin-top: 2.7em;
-  /* Adjust top margin as needed */
+  margin-top: 1.5em;
   top: 0;
   left: 0;
   right: 0;
@@ -720,8 +724,8 @@ nav {
   right: 0;
   bottom: 0;
   left: 0;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   background: #69d2dd;
   transition: all 1s;
   z-index: 4;
@@ -835,7 +839,7 @@ nav {
   padding: 20px;
   border: 1px solid #ddd;
   z-index: 1000;
-  max-width: 600px;
+  max-width: 1000px;
   width: 100%;
   color: #69d2dd;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -855,12 +859,6 @@ nav {
   z-index: 1000;
 }
 
-.tablePopup {
-  width: 100%;
-  border-collapse: collapse;
-  overflow: hidden;
-  z-index: 3;
-}
 
 .tablePopupTr {
   padding: 8px;
@@ -978,8 +976,8 @@ nav {
   display: flex;
   align-items: center;
   background: rgba(255, 0, 0, 0);
-  border: solid #36ff6c;
-  box-shadow: 0 0 5px #36ff6c;
+  border: solid #36ff65;
+  box-shadow: 0 0 5px #69d2dd;
   background: #e6222200;
 }
 
@@ -996,7 +994,7 @@ nav {
 
 .updatebtn .icon {
   position: absolute;
-  border-left: 1px solid #36ff6c6c;
+  border-left: 1px solid #36ff6565;
   transform: translateX(110px);
   height: 40px;
   width: 40px;
@@ -1011,7 +1009,7 @@ nav {
 }
 
 .updatebtn:hover {
-  background: #36ff6c;
+  background: #36ff65a6;
 }
 
 .updatebtn:hover .text {
@@ -1032,22 +1030,6 @@ nav {
   transform: scale(0.8);
 }
 
-.closeTbtn {
-  background: #79db7900;
-  text-align: center;
-  box-shadow: 0 0 5px #69d2dd;
-  color: #fff;
-  cursor: pointer;
-  font-size: 25px;
-  height: 40px;
-  line-height: 40px;
-  outline: none;
-  padding: 0;
-  padding-right: 10px;
-  position: relative;
-  -webkit-transition: background .4s;
-  transition: background .4s;
-}
 .deletebtn:active .icon svg {
   transform: scale(0.8);
 }
@@ -1117,6 +1099,21 @@ nav {
   display: flex;
   justify-content: space-between;
 }
+
+.createTicketBtn {
+  display: inline-block;
+  margin-bottom: 0.3em;
+  padding: 5px 10px;
+  font-size: 15px;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  border: 1px solid ;
+  background-color: #69d1dd00; 
+  color:  #69d2dd; 
+  cursor: pointer;
+  box-shadow: 0 0 10px #69d2dd; 
+}
 .closeTicketBtn {
   display: inline-block;
   margin-bottom: 0.3em;
@@ -1126,10 +1123,10 @@ nav {
   text-decoration: none;
   outline: none;
   border: 1px solid ;
-  background-color: #69d1dd00; /* Set your desired background color */
-  color:  #69d2dd; /* Set your desired text color */
+  background-color: #69d1dd00; 
+  color:  #69d2dd; 
   cursor: pointer;
-  box-shadow: 0 0 10px #69d2dd; /* Adjust glow color and intensity */
+  box-shadow: 0 0 10px #69d2dd; 
 }
 
 .animated-btn {
@@ -1153,27 +1150,6 @@ nav {
 .form-group {
   margin-bottom: 20px;
 }
-
-.btn-primary {
-  width: 100%;
-  padding: 15px;
-  background-color: hsl(186, 63%, 64%);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.btn-secondary {
-  background-color: #7f8c8d;
-  color: #ecf0f1;
-}
-
-.btn-success {
-  background-color: #69d2dd;
-  color: #ecf0f1;
-}
-
 .btn-close {
   position: absolute;
   background-color: hsla(186, 63%, 64%, 0.73);
@@ -1221,35 +1197,6 @@ nav {
   }
 }
 
-.ticketDasboard-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.ticket-dashboard {
-  max-width: 100%;
-  margin: 20px;
-  padding: 20px;
-  border-radius: 10px;
-  color: white;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
-  position: relative;
-}
-
-.add-ticket-btn {
-  position: absolute;
-  top: 1px;
-  right: 20px;
-  width: 100px;
-  padding: 5px;
-  background-color: #69d2dd;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-}
 
 table {
   width: 100%;
@@ -1273,6 +1220,7 @@ table {
   justify-content: center;
   align-items: center;
   margin: 0 auto;
+  margin-top: 1em;
   border: 1px solid transparent;
   overflow: hidden;
   z-index: 3;
@@ -1294,7 +1242,7 @@ th {
   padding: 20px 15px;
   text-align: center;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   color: #fff;
   text-transform: uppercase;
   transition: background-color 0.3s ease;
@@ -1306,19 +1254,17 @@ td {
   text-align: center;
   vertical-align: middle;
   font-weight: 300;
-  font-size: 12px;
+  font-size: 13px;
   color: #fff;
   border-bottom: solid 1px rgba(255, 255, 255, 0.1);
 }
 
-/* Animated hover effect */
 tr {
   transition: background-color 0.3s ease;
 }
 
 tr:hover {
   background-color: #5283882e;
-  /* Lighter neon light turquoise on hover */
   transition: background-color 0.3s ease;
 }
 

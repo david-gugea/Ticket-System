@@ -16,7 +16,7 @@
 
 ## Structure
 
-* Log in/Register (+session management)
+* Login/ Register
 * Ticket System
 
 ## Attributes for the create/edit Page
