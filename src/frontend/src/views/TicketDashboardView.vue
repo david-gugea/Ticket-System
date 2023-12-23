@@ -1,16 +1,21 @@
 <template>
   <section id="main">
+
     <!-- Main container -->
     <div class="fullSize">
+
       <!-- Top container with navigation -->
       <div id="top-container">
         <nav>
+
           <!-- Logo -->
           <div class="logo">
             <img ref="logo" class="logo" alt="Logo" src="../assets/logo_title.png">
           </div>
+
           <!-- Navigation menu -->
           <ul class="menu">
+
             <!-- User profile dropdown -->
             <li>
               <div class="dropdown">
@@ -24,6 +29,7 @@
                     </div>
                   </div>
                 </button>
+
                 <!-- Dropdown content -->
                 <div class="dropdown-content animated-btn">
                   <a ref="userButton" @click="openUserPopup">Users</a>
@@ -34,20 +40,25 @@
           </ul>
         </nav>
       </div>
+
       <!-- Search Bar -->
       <div class="search-bar">
         <input type="text" v-model="searchQuery" placeholder="Description..." @input="filterTable">
         <div class="search"></div>
       </div>
 
+      <!-- Button and Table Box -->
       <div class="btnTableBox">
         <button id="wide-button" @click="openPopup" :class="{ 'hover-effect': hover }">+</button>
 
+        <!-- Table Container -->
         <div class="table-container">
           <div class="tbl-header">
             <table cellpadding="0" cellspacing="0" border="0">
               <thead>
+                <!-- Table Rows -->
                 <tr>
+                  <!-- Table Columns -->
                   <th>ID</th>
                   <th>Description</th>
                   <th>Date Created</th>
@@ -75,7 +86,8 @@
                   <td>{{ ticket.user_id }}</td>
                   <td>{{ ticket.done ? 'Yes' : 'No' }}</td>
                   <td>
-                    <button @click="closeTicket(ticket)" :disabled="ticket.done" class="closeTicketBtn animated-btn">Close</button>
+                    <button @click="closeTicket(ticket)" :disabled="ticket.done"
+                      class="closeTicketBtn animated-btn">Close</button>
                   </td>
                   <td>
                     <button @click="editTicket(ticket)" class="edit" type="button"><span
@@ -88,7 +100,8 @@
         </div>
       </div>
     </div>
-    <!-- Pop-up form -->
+
+    <!-- Pop-up form for creating a ticket -->
     <div v-if="isPopupVisible" class="popup">
       <form @submit.prevent="createTicket">
         <div class="form-group">
@@ -96,6 +109,8 @@
           <textarea class="form-control" id="description" v-model="newTicket.description"
             oninvalid="this.setCustomValidity('Please fill out this field.')" required></textarea>
         </div>
+
+        <!-- Button group for Create Ticket and Close -->
         <div class="button-group">
           <button type="submit" class="createTicketBtn animated-btn">Create Ticket</button>
           <button @click.prevent="closePopup" type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
@@ -103,6 +118,8 @@
         </div>
       </form>
     </div>
+
+    <!-- Pop-up form for managing user data -->
     <div class="popup" v-if="userDataPopup">
       <form>
         <div class="form-group">
@@ -139,6 +156,8 @@
             </div>
           </div>
         </div>
+
+        <!-- Button group for closing the user data popup -->
         <div class="button-group">
           <button @click="closeUserPopup" type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
           </button>
@@ -156,7 +175,7 @@
             title="Please fill out this field."
             oninvalid="this.setCustomValidity('Please fill out this field.')"></textarea>
         </div>
-
+        <!-- Button group for Update Ticket, Delete Ticket, and Close -->
         <div class="button-group">
           <button @click.prevent="closePopup" type="button" class="btn-close" data-dismiss="modal"
             aria-label="Close"></button>
@@ -179,6 +198,7 @@
       </form>
     </div>
 
+    <!-- Loading Spinner -->
     <div v-if="loading" class="loading-spinner" role="status">
       <div class="spinner"></div>
     </div>
@@ -196,6 +216,7 @@ export default {
   name: "TicketDashboardView",
   data() {
     return {
+      // Data properties for managing tickets and user data
       newTicket: {
         description: '',
         date_created: '',
@@ -223,12 +244,14 @@ export default {
 
 
   methods: {
+    // Method to handle user logout
     logout() {
       localStorage.removeItem('loggedInUser');
       localStorage.removeItem('loggedInUserID');
       localStorage.removeItem('loggedInUserType');
       this.$router.push('/');
     },
+    // Method to create a new ticket
     createTicket() {
       const user = localStorage.getItem("loggedInUser");
       this.loading = true;
@@ -256,13 +279,14 @@ export default {
           this.loading = false;
         });
     },
+    // Method to filter tickets based on search query
     filterTable() {
       // Filter the table based on the searchQuery
       this.filteredTickets = this.tickets.filter(ticket =>
         ticket.description.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
-
+    // Method to open user data popup
     openUserPopup() {
       this.userDataPopup = true;
       axios.get(`http://localhost:8003/users/get_all`)
@@ -280,11 +304,11 @@ export default {
           this.loading = false;
         });
     },
-
+    // Method to close user data popup
     closeUserPopup() {
       this.userDataPopup = false;
     },
-
+    // Method to update user information
     updateUser(user) {
       this.loading = true;
 
@@ -305,6 +329,7 @@ export default {
           this.loading = false;
         });
     },
+    // Method to close a ticket
     closeTicket(ticket) {
       const userID = localStorage.getItem("loggedInUserID");
 
@@ -329,12 +354,12 @@ export default {
           });
       }
     },
-
+    // Method to edit a ticket
     editTicket(ticket) {
       this.selectedTicket = { ...ticket };
       this.openPopup();
     },
-
+    // Method to update ticket information
     updateTicket() {
       this.loading = true;
 
@@ -354,7 +379,7 @@ export default {
           this.loading = false;
         });
     },
-
+    // Method to delete a ticket
     deleteTicket() {
       const requestBody = {
         "id": this.selectedTicket.id
@@ -374,16 +399,18 @@ export default {
         });
 
     },
+    // Method to save data to local storage
     saveDataToLocalStorage() {
       localStorage.setItem('tickets', JSON.stringify(this.tickets));
     },
+    // Method to load data from local storage
     loadDataFromLocalStorage() {
       const storedTickets = localStorage.getItem('tickets');
       if (storedTickets) {
         this.tickets = JSON.parse(storedTickets);
       }
     },
-
+    // Method to format date for display
     formatDate(dateString) {
       if (dateString) {
         const date = new Date(dateString);
@@ -391,9 +418,11 @@ export default {
       }
       return '-';
     },
+    // Method to open the ticket popup
     openPopup() {
       this.isPopupVisible = true;
     },
+    // Method to close the ticket popup
     closePopup() {
       this.isPopupVisible = false;
       this.selectedTicket = null;
@@ -481,6 +510,7 @@ body {
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
+
 .fullSize {
   position: fixed;
   top: 0;
@@ -490,6 +520,7 @@ body {
   z-index: -1;
   background: radial-gradient(closest-corner, #1d2020, #000000);
 }
+
 .btnTableBox {
   padding-top: 3em;
 }
@@ -538,16 +569,19 @@ nav {
   margin-top: 4.25em;
 
 }
+
 .dark-background-select {
-  background-color: #333; 
-  color: white; 
+  background-color: #333;
+  color: white;
   border: solid #528388;
-  box-shadow: 0 0 10px #69d2dd; 
+  box-shadow: 0 0 10px #69d2dd;
 
   &:hover {
-    background-color: #555; /* Replace with the hover background color */
+    background-color: #555;
+    /* Replace with the hover background color */
   }
 }
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -568,11 +602,11 @@ nav {
   position: absolute;
   margin-top: 9.1em;
   margin-left: 43em;
-  border: 1px solid ;
+  border: 1px solid;
   background-color: #528388;
   min-width: 200px;
   cursor: pointer;
-  box-shadow: 0 0 10px #69d2dd; 
+  box-shadow: 0 0 10px #69d2dd;
   z-index: 1;
 }
 
@@ -583,6 +617,7 @@ nav {
 .animated:hover {
   transform: scale(1.1);
 }
+
 .dropdown-content a {
   color: #ffffff;
   padding: 12px 16px;
@@ -1108,12 +1143,13 @@ nav {
   text-align: center;
   text-decoration: none;
   outline: none;
-  border: 1px solid ;
-  background-color: #69d1dd00; 
-  color:  #69d2dd; 
+  border: 1px solid;
+  background-color: #69d1dd00;
+  color: #69d2dd;
   cursor: pointer;
-  box-shadow: 0 0 10px #69d2dd; 
+  box-shadow: 0 0 10px #69d2dd;
 }
+
 .closeTicketBtn {
   display: inline-block;
   margin-bottom: 0.3em;
@@ -1122,11 +1158,11 @@ nav {
   text-align: center;
   text-decoration: none;
   outline: none;
-  border: 1px solid ;
-  background-color: #69d1dd00; 
-  color:  #69d2dd; 
+  border: 1px solid;
+  background-color: #69d1dd00;
+  color: #69d2dd;
   cursor: pointer;
-  box-shadow: 0 0 10px #69d2dd; 
+  box-shadow: 0 0 10px #69d2dd;
 }
 
 .animated-btn {
@@ -1150,6 +1186,7 @@ nav {
 .form-group {
   margin-bottom: 20px;
 }
+
 .btn-close {
   position: absolute;
   background-color: hsla(186, 63%, 64%, 0.73);
