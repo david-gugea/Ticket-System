@@ -9,10 +9,10 @@
 ## Tech Stack
 
 * UI/UX Design: Figma
-* Frontend: Vue3 and js
+* Frontend: Vue.js + HTML/CSS
 * Backend: Python (fast-api)
 * DB: postgresql (containerized)
-* HTML/CSS: UI Library (~)
+
 
 ## Structure
 
@@ -117,21 +117,27 @@ There's a 1-n Relationship between user and ticket tables.
 ```
 yarn install
 ```
-
-### Compiles and hot-reloads for development
+### Install Vue CLI
 ```
-yarn serve
+yarn install -g @vue/cli@5.0.8   
 ```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
 ### Lints and fixes files
 ```
 yarn lint
 ```
+### Install Axios
+```
+yarn add axios
+```
+### Compiles and minifies for production
+```
+yarn build
+```
+### Compiles and hot-reloads for development
+```
+yarn run serve
+```
+->  http://localhost:8080/
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

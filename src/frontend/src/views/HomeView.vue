@@ -9,7 +9,7 @@
     </div>
 
     <canvas ref="canvas" class="particle-canvas" @mousemove="handleMouseMove"></canvas>
-    <div class="center-card">
+    <div class="logo-container">
       <transition name="fade">
         <img ref="logo" class="logo" alt="Logo" src="../assets/logo.png" v-if="showLogo">
       </transition>
@@ -18,9 +18,7 @@
   </div>
 
   <div class="loginBox">
-    <div class="loginform">
-
-    </div>
+    <div class="loginform"></div>
   </div>
 
 
@@ -54,36 +52,34 @@
   </div>
 
   <!-- Register Form -->
-<div v-show="view === 'register'" class="form-wrapper">
-  <div class="wrapperRegister">
-    <div class="login-box">
-      <form>
-        <h2 class="form-title">Register</h2>
-        <div class="user-box">
-          <input type="text" id="username" v-model="username" class="form-input" />
-          <label for="username">Username</label>
-        </div>
-        <div class="user-box">
-          <input type="password" id="password" v-model="password" @input="checkStrength" class="form-input" />
-          <label for="password">Password:</label>
-        </div>
-       
-        <div class="user-box">
-          <input type="password" id="passwordConfirm" v-model="passwordConfirm" class="form-input" />
-          <label for="passwordConfirm">Password Confirmation:</label>
-          <div id="color-bar" :style="{ background: meterColor, width: meterWidth }"></div>
-        </div>
-        <label v-if="usernameError || passwordError" style="color: red;">Username already exists</label>
-        <label v-if="emptyDataError" style="color: red;">Please enter username and password </label>
-        <label v-if="notMatchingPassword" style="color: red;">Passwords are not matching</label>
-        <button @click.prevent="register" :class="{ 'hover-effect': hover }" class="form-button">Register</button>
-        <button @click.prevent="toggleView" :class="{ 'hover-effect': hover }" class="form-button">Login</button>
-      </form>
-    </div>
+  <div v-show="view === 'register'" class="form-wrapper">
+    <div class="wrapperRegister">
+      <div class="login-box">
+        <form>
+          <h2 class="form-title">Register</h2>
+          <div class="user-box">
+            <input type="text" id="username" v-model="username" class="form-input" />
+            <label for="username">Username</label>
+          </div>
+          <div class="user-box">
+            <input type="password" id="password" v-model="password" @input="checkStrength" class="form-input" />
+            <label for="password">Password:</label>
+          </div>
+
+          <div class="user-box">
+            <input type="password" id="passwordConfirm" v-model="passwordConfirm" class="form-input" />
+            <label for="passwordConfirm">Password Confirmation:</label>
+            <div id="color-bar" :style="{ background: meterColor, width: meterWidth }"></div>
+          </div>
+          <label v-if="usernameError || passwordError" style="color: red;">Username already exists</label>
+          <label v-if="emptyDataError" style="color: red;">Please enter username and password </label>
+          <label v-if="notMatchingPassword" style="color: red;">Passwords are not matching</label>
+          <button @click.prevent="register" :class="{ 'hover-effect': hover }" class="form-button">Register</button>
+          <button @click.prevent="toggleView" :class="{ 'hover-effect': hover }" class="form-button">Login</button>
+        </form>
+      </div>
     </div>
   </div>
-
-
 </template>
 
 <script>
@@ -99,7 +95,7 @@ export default {
       usernameError: false,
       passwordError: false,
       emptyDataError: false,
-      notMatchingPassword:false,
+      notMatchingPassword: false,
       view: 'login',
       value1: false,
       particles: [],
@@ -214,11 +210,11 @@ export default {
       this.passwordError = false;
       this.wrongData = false;
       this.emptyDataError = false;
-      this.notMatchingPassword=false;
+      this.notMatchingPassword = false;
 
       if (this.password !== this.passwordConfirm) {
         console.error('Password and password confirmation do not match');
-        this.notMatchingPassword=true;
+        this.notMatchingPassword = true;
         return;
       }
 
@@ -289,7 +285,7 @@ export default {
       this.meterWidth = width;
       this.meterText = text;
     },
-  
+
     login() {
       this.usernameError = false;
       this.passwordError = false;
@@ -333,8 +329,9 @@ export default {
 
 #color-bar {
   height: 5px;
-  margin-top: 10px;
+  margin-top: 5px;
   transition: width 0.5s ease, background-color 0.5s ease;
+  background-color: #000000;
 }
 
 #meter {
@@ -640,13 +637,98 @@ html {
   background: radial-gradient(closest-corner, #1d2020, #000000);
 }
 
-.center-card {
+.logo-container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
   text-align: center;
+
+}
+#logo {
+position: absolute;
+top: 0;
+left: 0;
+width: 250px;
+height: 100px;
+overflow: hidden;
+}
+#logo img {
+width: 100%;
+}
+#logo:before {
+content: '';
+position: absolute;
+top: 0;
+left: -100px;
+width: 70px;
+height: 100%;
+background: rgba(255,255,255, 0.3);
+transform: skewX(-30deg);
+animation-name: slide;
+animation-duration: 7s;
+animation-timing-function: ease-in-out;
+animation-delay: .3s;
+animation-iteration-count: infinite;
+animation-direction: alternate;
+background: linear-gradient(
+    to right, 
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, 0.13) 77%,
+    rgba(255, 255, 255, 0.5) 92%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+}
+@keyframes slide {
+  0% {
+    left: -100;
+    top: 0;
+  }
+  50% {
+    left: 120px;
+    top: 0px;
+  }
+  100% {
+    left: 290px;
+    top: 0;
+  }
+}
+.login-shadow {
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 100%;
+  z-index: 1;
+  box-shadow: 10px -55px 30px 15px #823ca6, 24px -10px 47px 10px #aab3d2, -21px -25px 97px 10px #5acee3, 51px 5px 17px 10px #1b7d8f, 3px 2px 77px 10px #f30bf5;
+  animation: shadow-rotate 1.5s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes circle-size {
+  from {
+    width: 250px;
+    height: 250px;
+  }
+
+  to {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+
+@keyframes shadow-rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 .logo {
@@ -768,6 +850,7 @@ body {
 
 .form-title {
   font-size: 28px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   color: #70ced8;
   text-align: center;
 }
@@ -822,7 +905,7 @@ body {
   outline: none;
   font-size: 16px;
   color: #fff;
-  font-weight: 600;
+  font-weight: 	Copperplate;
 }
 
 .form-button:hover {

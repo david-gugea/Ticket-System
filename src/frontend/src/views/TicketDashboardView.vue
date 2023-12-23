@@ -1,83 +1,86 @@
 <template>
-  <section>
+  <section id="main">
     <div class="fullSize">
       <div id="top-container">
-
-        <nav role="navigation">
-          <div id="menuToggle">
-            <input type="checkbox" />
-            <span></span>
-            <span></span>
-            <span></span>
-            <ul id="menu">
-              <a>
-                <li ref="userButton" @click="openUserPopup">Users</li>
-              </a>
-              <a @click="logout">
-                <li>Logout</li>
-              </a>
-            </ul>
+        <nav>
+          <div class="logo">
+            <img ref="logo" class="logo" alt="Logo" src="../assets/logo_title.png">
           </div>
+          <!--Navigation-->
+          <ul class="menu">
+            <li>
+              <!-- Animated Dropdown User Profile -->
+              <div class="dropdown">
+                <button class="dropbtn" @click="openUserPopup">
+                  <div class="profile-container">
+                    <img src="../assets/userAvatar.png" alt="User Profile Image" class="profile-image" />
+                    <div class="user-info">
+                      <p class="logged-in-user">User: <span id="usernamePlaceholder">{{ loggedInUser }}</span></p>
+                      <p class="logged-in-user-type">User type: <span id="userTypePlaceholder">{{ loggedInUserType
+                      }}</span></p>
+                    </div>
+                  </div>
+                </button>
+                <div class="dropdown-content">
+                  <a ref="userButton" @click="openUserPopup">Users</a>
+                  <a @click="logout">Logout</a>
+                </div>
+              </div>
+            </li>
+          </ul>
         </nav>
-
-        <!-- User Profile -->
-        <div class="profile-container">
-          <img src="../assets/userAvatar.png" alt="User Profile Image" class="profile-image" />
-          <div class="user-info">
-            <p class="logged-in-user">User: <span id="usernamePlaceholder">{{ loggedInUser }}</span></p>
-            <p class="logged-in-user-type">User type: <span id="userTypePlaceholder">{{ loggedInUserType }}</span></p>
-          </div>
-        </div>
-
-        <!-- Search Bar Section -->
-        <div class="search-bar">
-          <input type="text" v-model="searchQuery" placeholder="Search... Description" @input="filterTable">
-          <div class="search"></div>
-        </div>
+      </div>
+      <!-- Search Bar Section -->
+      <div class="search-bar">
+        <input type="text" v-model="searchQuery" placeholder="Search... Description" @input="filterTable">
+        <div class="search"></div>
       </div>
 
-      <button id="wide-button" @click="openPopup" :class="{ 'hover-effect': hover }">+</button>
+      <div class="btnTableBox">
+        <button id="wide-button" @click="openPopup" :class="{ 'hover-effect': hover }">+</button>
 
-      <div class="table-container">
-        <div class="tbl-header">
-          <table cellpadding="0" cellspacing="0" border="0">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Description</th>
-                <th>Date Created</th>
-                <th>Date Closed</th>
-                <th>Created By</th>
-                <th>Closed By</th>
-                <th>User ID</th>
-                <th>Done</th>
-                <th>Close</th>
-                <th></th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <div class="tbl-content">
-          <table cellpadding="0" cellspacing="0" border="0">
-            <tbody>
-              <tr v-for="ticket in filteredTickets" :key="ticket.id">
-                <td>{{ ticket.id }}</td>
-                <td>{{ ticket.description }}</td>
-                <td>{{ formatDate(ticket.date_created) }}</td>
-                <td>{{ formatDate(ticket.date_closed) }}</td>
-                <td><span>{{ loggedInUser }}</span></td>
-                <td>{{ ticket.closed_by || '-' }}</td>
-                <td>{{ ticket.user_id }}</td>
-                <td>{{ ticket.done ? 'Yes' : 'No' }}</td>
-                <td><button @click="closeTicket(ticket)" :disabled="ticket.done"
-                    class="btn btn-sm btn-primary">Close</button>
-                </td>
-                <td>
-                  <button @click="editTicket(ticket)" class="btn btn-sm btn-primary">Edit</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="table-container">
+          <div class="tbl-header">
+            <table cellpadding="0" cellspacing="0" border="0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Description</th>
+                  <th>Date Created</th>
+                  <th>Date Closed</th>
+                  <th>Created By</th>
+                  <th>Closed By</th>
+                  <th>User ID</th>
+                  <th>Done</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div class="tbl-content">
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tbody>
+                <tr v-for="ticket in filteredTickets" :key="ticket.id">
+                  <td>{{ ticket.id }}</td>
+                  <td>{{ ticket.description }}</td>
+                  <td>{{ formatDate(ticket.date_created) }}</td>
+                  <td>{{ formatDate(ticket.date_closed) }}</td>
+                  <td><span>{{ loggedInUser }}</span></td>
+                  <td>{{ ticket.closed_by || '-' }}</td>
+                  <td>{{ ticket.user_id }}</td>
+                  <td>{{ ticket.done ? 'Yes' : 'No' }}</td>
+                  <td>
+                    <button @click="closeTicket(ticket)" :disabled="ticket.done" class="closeTicketBtn animated-btn">Close</button>
+                  </td>
+                  <td>
+                    <button @click="editTicket(ticket)" class="edit" type="button"><span
+                        class="edit-icon"></span><span></span></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -86,7 +89,7 @@
       <form @submit.prevent="createTicket">
         <div class="form-group">
           <label for="description">Description</label>
-          <textarea class="form-control" id="description" v-model="newTicket.description" 
+          <textarea class="form-control" id="description" v-model="newTicket.description"
             oninvalid="this.setCustomValidity('Please fill out this field.')" required></textarea>
         </div>
         <div class="button-group">
@@ -96,9 +99,7 @@
         </div>
       </form>
     </div>
-
-
-    <div class="popupUser" v-if="userDataPopup">
+    <div class="popup" v-if="userDataPopup">
       <form>
         <div class="form-group">
           <div id="table-container">
@@ -155,9 +156,21 @@
         <div class="button-group">
           <button @click.prevent="closePopup" type="button" class="btn-close" data-dismiss="modal"
             aria-label="Close"></button>
-          <button type="submit" class="btn btn-sm btn-primary">Update Ticket</button>
+          <button type="submit" class="updatebtn">
+            <span class="text">Update</span>
+            <span class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path d="M20 6.7l-9.3 9.3-4-4L2 12l7 7 13-13z" />
+              </svg>
+            </span>
+          </button>
           <br>
-          <button @click.prevent="deleteTicket" class="btn btn-sm btn-danger">Delete Ticket</button>
+          <button @click.prevent="deleteTicket" class="deletebtn"><span class="text">Delete</span><span class="icon"><svg
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path
+                  d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z">
+                </path>
+              </svg></span></button>
         </div>
       </form>
     </div>
@@ -456,10 +469,16 @@ export default {
 
 <style scoped>
 body {
-  margin: 0;
-  padding: 0;
+  margin: 0px;
+  padding: 0px;
+  font-family: "Asap", sans-serif;
+  background: #222;
 }
 
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
 
 .fullSize {
   position: fixed;
@@ -472,12 +491,141 @@ body {
 
 }
 
+.btnTableBox {
+  padding-top: 3em;
+}
+
 #top-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px;
 }
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+/*Navigation*/
+nav {
+  padding-bottom: 6.2em;
+  padding-right: 17em;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 80px;
+  width: 100%;
+  position: fixed;
+  z-index: 1;
+  background: #000000;
+  box-shadow: 0px 1px 2px rgba(3, 233, 244, 0.6),
+    0px 2px 4px rgba(3, 233, 244, 0.6),
+    0px 4px 8px rgba(3, 233, 244, 0.6),
+    0px 8px 16px rgba(3, 233, 244, 0.6);
+}
+
+.logo {
+  height: 50px;
+  width: auto;
+  display: flex;
+  padding-right: 29em;
+  margin-top: 2.4em;
+
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  margin-top: 6.25em;
+  margin-left: 3em;
+  background-color: #528388;
+  min-width: 200px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: #ffffff;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.profile-container {
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  margin: 20px;
+  margin-right: 1em;
+  padding: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 3;
+  background-color: rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 10px;
+  /* Adjust top positioning as needed */
+  right: 10px;
+  /* Adjust right positioning as needed */
+}
+
+.profile-image {
+  max-width: 40px;
+  margin-right: 20px;
+  margin-bottom: 1em;
+  /* Adjust this value as needed */
+}
+
+.user-info {
+  text-align: left;
+  margin-bottom: 1em;
+  display: flex;
+  flex-direction: column;
+  /* Align content in a column */
+}
+
+.logged-in-user,
+.logged-in-user-type {
+  font-size: 14px;
+  /* Adjust font size as needed */
+  font-weight: bold;
+  color: #fff;
+  /* Adjust text color as needed */
+  margin: 0;
+  /* Reset margin for better alignment */
+}
+
+
+
 
 #left-placeholder,
 #center-placeholder,
@@ -504,12 +652,11 @@ body {
   text-transform: uppercase;
   overflow: hidden;
   transition: background 0.5s, color 0.5s, box-shadow 0.5s;
-  margin-top: 60px;
-  margin-bottom: 30px;
+  margin-top: 80px;
+  margin-bottom: 10px;
   letter-spacing: 4px;
   border: 2px solid #69d2dd;
   background: transparent;
-  border-radius: 5px;
 }
 
 #wide-button:hover {
@@ -532,6 +679,10 @@ body {
   animation: wide-button 1s linear infinite;
 }
 
+.table-container {
+  margin-top: 1em;
+}
+
 @keyframes wide-button {
   0% {
     left: -100%;
@@ -543,109 +694,23 @@ body {
   }
 }
 
-nav {
-  margin-top: 15px;
-  padding: 10px;
-}
-
-#menuToggle {
-  display: block;
-  position: relative;
-  user-select: none;
-  cursor: pointer;
-}
-
-#menuToggle input {
-  display: block;
-  width: 40px;
-  height: 32px;
-  position: absolute;
-  top: -7px;
-  left: -5px;
-  cursor: pointer;
-  text-align: left;
-  opacity: 0;
-  /* hide the checkbox */
-  z-index: 2;
-  /* ensure the checkbox is above the span elements */
-}
-
-#menuToggle span {
-  display: block;
-  width: 30px;
-  height: 3px;
-  margin-bottom: 5px;
-  position: relative;
-  background: #69d2dd;
-  border-radius: 3px;
-  z-index: 1;
-  transform-origin: 4px 0;
-  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), background 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
-    opacity 0.55s ease;
-}
-
-#menuToggle span:first-child {
-  transform-origin: 0% 0%;
-}
-
-#menuToggle span:nth-last-child(2) {
-  transform-origin: 0% 100%;
-}
-
-#menuToggle input:checked~span {
-  opacity: 1;
-  transform: rotate(-45deg) translate(-5px, -6px);
-  background: #69d2dd;
-}
-
-#menuToggle input:checked~span:nth-last-child(3) {
-  opacity: 0;
-  transform: rotate(0deg) scale(0.2, 0.2);
-}
-
-#menuToggle input:checked~span:nth-last-child(2) {
-  transform: rotate(45deg) translate(-5px, 6px);
-}
-
-#menu {
-  position: absolute;
-  width: 200px;
-  margin-top: -33.5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  list-style-type: none;
-  padding: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-#menuToggle input:checked~ul {
-  opacity: 1;
-  visibility: visible;
-}
-
-#menu a {
-  text-decoration: none;
-  color: #69d2dd;
-  text-align: left;
-}
-
-#menu li {
-  padding: 15px;
-  text-align: center;
-}
-
 .search-bar {
   position: absolute;
   margin: auto;
-  margin-right: -1.7em;
-  margin-top: 1em;
+  margin-left: 60.5em;
+  margin-top: 2.7em;
+  /* Adjust top margin as needed */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   width: 600px;
-  height: 100px;
+  height: 30px;
+}
+
+.search-bar input {
+  width: 100%;
+  max-width: 300px;
 }
 
 .search-bar .search {
@@ -770,22 +835,22 @@ nav {
   padding: 20px;
   border: 1px solid #ddd;
   z-index: 1000;
-  max-width: 400px;
+  max-width: 600px;
   width: 100%;
-  border-radius: 10px;
+  color: #69d2dd;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   opacity: 0;
   animation: fadeIn 0.3s ease-in-out forwards;
 }
 
-.popupUser {
+.popup {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 20px;
   background: radial-gradient(closest-corner, #1d2020, #000000);
-  border: 1px solid #ccc;
+  border: solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
@@ -793,21 +858,15 @@ nav {
 .tablePopup {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
-  border: 2px solid transparent;
   overflow: hidden;
   z-index: 3;
-  animation: borderAnimation 10s infinite alternate;
 }
 
 .tablePopupTr {
-  border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-  border: 2px solid transparent;
   overflow: hidden;
   z-index: 3;
-  animation: borderAnimation 10s infinite alternate;
 }
 
 .popup form {
@@ -826,22 +885,259 @@ nav {
   border-radius: 4px;
 }
 
+.edit {
+  background: #00000000;
+  color: #fff;
+  cursor: pointer;
+  font-size: 25px;
+  height: 40px;
+  line-height: 40px;
+  outline: none;
+  padding: 0;
+  padding-right: 10px;
+  position: relative;
+  -webkit-transition: background .4s;
+  transition: background .4s;
+}
+
+.edit span {
+  display: inline-block;
+  float: left;
+}
+
+.edit .edit-icon {
+  height: 40px;
+  position: relative;
+  width: 40px;
+}
+
+.edit .edit-icon:before {
+  border: 3px solid #fff;
+  content: "";
+  display: inline-block;
+  height: 50%;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  width: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.edit .edit-icon:after {
+  background: #69d2dd;
+  border: 2px #fff solid;
+  border-bottom-left-radius: 5px 15px;
+  border-bottom-right-radius: 5px 15px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  box-shadow: 0 0 0 2px #69d2dd;
+  content: "";
+  display: inline-block;
+  height: 55%;
+  position: absolute;
+  top: 7%;
+  left: 45%;
+  width: 6px;
+  transform: translate(0, 0) rotate(45deg);
+  transform-origin: 50% 75%;
+  transition: background .4s, box-shadow .4s;
+}
+
+.edit:hover span:after {
+  background: #69d2dd;
+  box-shadow: 0 0 0 2px #69d2dd;
+  animation: wiggle .25s 3 linear;
+}
+
+@keyframes wiggle {
+  0% {
+    transform: translate(0, 0) rotate(45deg);
+  }
+
+  25% {
+    transform: translate(0, 0) rotate(25deg);
+  }
+
+  50% {
+    transform: translate(0, 0) rotate(45deg);
+  }
+
+  75% {
+    transform: translate(0, 0) rotate(65deg);
+  }
+
+  100% {
+    transform: translate(0, 0) rotate(45deg);
+  }
+}
+
+.updatebtn {
+  width: 165px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 0, 0, 0);
+  border: solid #36ff6c;
+  box-shadow: 0 0 5px #36ff6c;
+  background: #e6222200;
+}
+
+.updatebtn,
+.updatebtn span {
+  transition: 200ms;
+}
+
+.updatebtn .text {
+  transform: translateX(35px);
+  color: white;
+  font-weight: bold;
+}
+
+.updatebtn .icon {
+  position: absolute;
+  border-left: 1px solid #36ff6c6c;
+  transform: translateX(110px);
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.updatebtn svg {
+  width: 50px;
+  fill: #eee;
+}
+
+.updatebtn:hover {
+  background: #36ff6c;
+}
+
+.updatebtn:hover .text {
+  color: transparent;
+}
+
+.updatebtn:hover .icon {
+  width: 150px;
+  border-left: none;
+  transform: translateX(0);
+}
+
+.updatebtn:focus {
+  outline: none;
+}
+
+.updatebtn:active .icon svg {
+  transform: scale(0.8);
+}
+
+.closeTbtn {
+  background: #79db7900;
+  text-align: center;
+  box-shadow: 0 0 5px #69d2dd;
+  color: #fff;
+  cursor: pointer;
+  font-size: 25px;
+  height: 40px;
+  line-height: 40px;
+  outline: none;
+  padding: 0;
+  padding-right: 10px;
+  position: relative;
+  -webkit-transition: background .4s;
+  transition: background .4s;
+}
+.deletebtn:active .icon svg {
+  transform: scale(0.8);
+}
+
+.deletebtn {
+  width: 165px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 0, 0, 0);
+  border: solid red;
+  box-shadow: 0 0 5px red;
+  background: #e6222200;
+}
+
+.deletebtn,
+.deletebtn span {
+  transition: 200ms;
+}
+
+.deletebtn .text {
+  transform: translateX(35px);
+  color: white;
+  font-weight: bold;
+}
+
+.deletebtn .icon {
+  position: absolute;
+  border-left: 1px solid #c41b1b71;
+  transform: translateX(110px);
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deletebtn svg {
+  width: 15px;
+  fill: #eee;
+}
+
+.deletebtn:hover {
+  background: #ff3636;
+}
+
+.deletebtn:hover .text {
+  color: transparent;
+}
+
+.deletebtn:hover .icon {
+  width: 150px;
+  border-left: none;
+  transform: translateX(0);
+}
+
+.deletebtn:focus {
+  outline: none;
+}
+
+.deletebtn:active .icon svg {
+  transform: scale(0.8);
+}
+
 .button-group {
   display: flex;
   justify-content: space-between;
 }
-
-.btn {
-  background-color: #5cb85c;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
+.closeTicketBtn {
+  display: inline-block;
+  margin-bottom: 0.3em;
+  padding: 5px 10px;
+  font-size: 15px;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  border: 1px solid ;
+  background-color: #69d1dd00; /* Set your desired background color */
+  color:  #69d2dd; /* Set your desired text color */
   cursor: pointer;
+  box-shadow: 0 0 10px #69d2dd; /* Adjust glow color and intensity */
 }
 
-.btn-close {
-  background-color: #d9534f;
+.animated-btn {
+  transition: transform 0.3s ease-in-out;
+}
+
+.animated-btn:hover {
+  transform: scale(1.1);
 }
 
 @keyframes fadeIn {
@@ -861,57 +1157,12 @@ nav {
 .btn-primary {
   width: 100%;
   padding: 15px;
-  background-color: #69d2dd;
+  background-color: hsl(186, 63%, 64%);
   color: white;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
-.profile-container {
-  display: flex;
-  align-items: center;
-  max-width: 600px;
-  margin: 20px;
-  margin-right: 1em;
-  padding: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
-  overflow: hidden;
-  z-index: 3;
-  background-color: rgba(0, 0, 0, 0.2);
-  animation: borderAnimation 10s infinite alternate;
-  position: fixed;
-  top: 10px;
-  right: 10px;
-}
-
-.profile-image {
-  max-width: 40px;
-  margin-right: 20px;
-}
-
-.user-info {
-  text-align: left;
-}
-
-.logged-in-user {
-  font-size: 15px;
-  font-weight: bold;
-  color: #333;
-}
-
-.logged-in-user-type {
-  font-size: 15px;
-  font-weight: bold;
-  color: #333;
-}
-
-.search-bar input {
-  width: 100%;
-  max-width: 300px;
-}
-
 
 .btn-secondary {
   background-color: #7f8c8d;
@@ -925,10 +1176,10 @@ nav {
 
 .btn-close {
   position: absolute;
+  background-color: hsla(186, 63%, 64%, 0.73);
   top: 10px;
   right: 10px;
   transition: transform 0.3s ease-in-out;
-  background-color: #7f8c8d;
   color: #ecf0f1;
 }
 
@@ -996,7 +1247,6 @@ nav {
   background-color: #69d2dd;
   color: white;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
 }
@@ -1023,7 +1273,7 @@ table {
   justify-content: center;
   align-items: center;
   margin: 0 auto;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   overflow: hidden;
   z-index: 3;
   background-color: #528388;
@@ -1038,15 +1288,13 @@ table {
   justify-content: center;
   align-items: center;
   margin: 0 auto;
-  border: 2px solid transparent;
-  animation: borderAnimation 10s infinite alternate;
 }
 
 th {
   padding: 20px 15px;
   text-align: center;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 14px;
   color: #fff;
   text-transform: uppercase;
   transition: background-color 0.3s ease;
