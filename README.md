@@ -2,14 +2,14 @@
 
 ## User types
 
-* Customer: create, can read only his own ticket
-* Developer: create read update
-* Admin : create read update delete
+* Customer: create, read, update and delete his own Ticket
+* Developer: create, read, update and delete all tickets
+* Admin : create, read, update and delete all tickets + can update User roles
 
 ## Tech Stack
 
 * UI/UX Design: Figma
-* Frontend: Vue
+* Frontend: Vue3 and js
 * Backend: Python (fast-api)
 * DB: postgresql (containerized)
 * HTML/CSS: UI Library (~)
@@ -106,3 +106,42 @@ There's a 1-n Relationship between user and ticket tables.
 
 * username: root
 * password: root
+
+-----------------------------------------------------------------------------------------------------------------------
+***********************************************************************************************************************
+-----------------------------------------------------------------------------------------------------------------------
+
+# frontend
+
+## Project setup
+```
+yarn install
+```
+
+### Compiles and hot-reloads for development
+```
+yarn serve
+```
+
+### Compiles and minifies for production
+```
+yarn build
+```
+
+### Lints and fixes files
+```
+yarn lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Login & Register
+When you register you will be assigned with the user type admin.
+This is done automatically in the login() function so that you can fully test the web application with all rights.
+Normally every newly registered user is created with the user_type customer.
+
+
+
+
+
