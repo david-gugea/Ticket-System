@@ -44,7 +44,7 @@
             <label for="password">Password:</label>
           </div>
           <br />
-          <label v-if="wrongData" style="color: red;">Wrong username or password</label>
+          <label v-if="wrongData" style="color: red;">Wrong username/ password or the user doesn't exist</label>
           <label v-if="emptyDataError" style="color: red;">Please enter username and password </label>
           <button @click.prevent="login" :class="{ 'hover-effect': hover }" class="form-button">Login</button>
           <button @click.prevent="toggleView" :class="{ 'hover-effect': hover }" class="form-button">Register</button>
@@ -332,6 +332,11 @@ export default {
   background-color: #000000;
 }
 
+
+.particle-canvas[data-v-9ea40744]{
+  width: 100% !important; 
+}
+
 #meter {
   width: 100%;
   height: 10px;
@@ -408,7 +413,6 @@ html {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
   height: 100%;
   background: linear-gradient(45deg, #03e9f4, #3273dc);
   z-index: 1;
@@ -462,6 +466,7 @@ html {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
   background: #000000;
 }
 
@@ -473,7 +478,7 @@ html {
   box-sizing: border-box;
   border-radius: 10px;
   z-index: 100;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .form-title {
@@ -744,9 +749,11 @@ html {
 }
 
 body {
-  margin: 0;
   background: radial-gradient(closest-corner, #1d2020, #000000);
   overflow: hidden;
+  margin: 0px;
+  padding: 0px;
+  font-family: "Asap", sans-serif;
 
 }
 

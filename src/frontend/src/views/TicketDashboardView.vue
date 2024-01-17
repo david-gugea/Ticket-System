@@ -430,6 +430,7 @@ export default {
     },
   },
   mounted() {
+    
     const newUserID = localStorage.getItem('loggedInUserID');
     this.loggedInUser = localStorage.getItem('loggedInUser');
     this.loggedInUserType = localStorage.getItem('loggedInUserType')
@@ -442,6 +443,7 @@ export default {
     const userType = localStorage.getItem('loggedInUserType');
     this.loading = true;
     if (userType === "admin") {
+     
       axios.get(`http://localhost:8003/tickets/get_all`)
         .then(response => {
           this.tickets = response.data;
@@ -1186,7 +1188,6 @@ nav {
 .form-group {
   margin-bottom: 20px;
 }
-
 .btn-close {
   position: absolute;
   background-color: hsla(186, 63%, 64%, 0.73);
@@ -1198,7 +1199,7 @@ nav {
 
 .btn-close:hover {
   transform: scale(1.2);
-  /* Adjust the scale factor as needed */
+
 }
 
 .loading-spinner {
