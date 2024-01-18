@@ -63,8 +63,8 @@
                   <th>Description</th>
                   <th>Date Created</th>
                   <th>Date Closed</th>
-                  <th>Created By</th>
-                  <th>Closed By</th>
+                  <th>Created By (User ID)</th>
+                  <th>Closed By (User ID)</th>
                   <th>User ID</th>
                   <th>Done</th>
                   <th></th>
@@ -81,8 +81,10 @@
                   <td>{{ ticket.description }}</td>
                   <td>{{ formatDate(ticket.date_created) }}</td>
                   <td>{{ formatDate(ticket.date_closed) }}</td>
-                  <td><span>{{ loggedInUser }}</span></td>
-                  <td>{{ ticket.closed_by || '-' }}</td>
+                  <td>{{ ticket.user_id }}</td>
+                  <td>
+                    {{ ticket.closed_by }}
+                  </td>
                   <td>{{ ticket.user_id }}</td>
                   <td>{{ ticket.done ? 'Yes' : 'No' }}</td>
                   <td>
@@ -208,7 +210,7 @@
 <script>
 import axios from 'axios';
 const userID = localStorage.getItem("loggedInUserID");
-const user = localStorage.getItem("loggedInUser");
+//const user = localStorage.getItem("loggedInUser");
 
 export default {
 
@@ -222,9 +224,11 @@ export default {
         date_created: '',
         date_closed: '',
         done: false,
-        created_by: user,
+        created_by: '',
         closed_by: '',
         user_id: userID
+        
+
       },
       tickets: [],
       usersData: [],
@@ -242,7 +246,6 @@ export default {
     };
   },
 
-
   methods: {
     // Method to handle user logout
     logout() {
@@ -253,7 +256,6 @@ export default {
     },
     // Method to create a new ticket
     createTicket() {
-      const user = localStorage.getItem("loggedInUser");
       this.loading = true;
       axios.post('http://localhost:8003/tickets/create', this.newTicket)
         .then(response => {
@@ -263,7 +265,7 @@ export default {
             date_created: '',
             date_closed: '',
             done: false,
-            created_by: user,
+            created_by: '',
             closed_by: '',
             user_id: '',
             selectedTicket: null
@@ -329,6 +331,7 @@ export default {
           this.loading = false;
         });
     },
+
     // Method to close a ticket
     closeTicket(ticket) {
       const userID = localStorage.getItem("loggedInUserID");
@@ -337,7 +340,7 @@ export default {
         this.loading = true;
         ticket.done = true;
         ticket.date_closed = Date.now();
-        ticket.closed_by = this.loggedInUser;
+        ticket.closed_by = userID;
         const requestBody = {
           "id": ticket.id,
           "closed_by": userID,
@@ -429,6 +432,7 @@ export default {
       this.popupUser
     },
   },
+  
   mounted() {
     
     const newUserID = localStorage.getItem('loggedInUserID');
@@ -496,8 +500,8 @@ export default {
           this.loading = false;
         });
     }
-
   }
+  
 };
 </script>
 
