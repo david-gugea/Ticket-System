@@ -65,7 +65,6 @@
                   <th>Date Closed</th>
                   <th>Created By (User ID)</th>
                   <th>Closed By (User ID)</th>
-                  <th>User ID</th>
                   <th>Done</th>
                   <th></th>
                   <th></th>
@@ -85,7 +84,6 @@
                   <td>
                     {{ ticket.closed_by }}
                   </td>
-                  <td>{{ ticket.user_id }}</td>
                   <td>{{ ticket.done ? 'Yes' : 'No' }}</td>
                   <td>
                     <button @click="closeTicket(ticket)" :disabled="ticket.done"
